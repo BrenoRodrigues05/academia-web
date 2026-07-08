@@ -10,9 +10,17 @@ import {
   Typography,
 } from "@mui/material";
 
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+
+import {
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
+
 export default function LoginPage() {
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
+  const [showPassword, setShowPassword] = useState(false); 
 
   return (
     <Container maxWidth="sm">
@@ -60,12 +68,30 @@ export default function LoginPage() {
 
             <TextField
               label="Senha"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={senha}
-              onChange={(e) =>
-                setSenha(e.target.value)
-              }
+              onChange={(e) => setSenha(e.target.value)}
               fullWidth
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() =>
+                          setShowPassword(!showPassword)
+                        }
+                        edge="end"
+                      >
+                        {showPassword ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
 
             <Button
