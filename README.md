@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -73,3 +74,7 @@ export default defineConfig([
 ])
 
 ```
+=======
+# academia-web
+Frontend da Academia API desenvolvido com React, TypeScript e Material UI.
+>>>>>>> cac4732f3a0a9e29b4a1210a80315a75fbd06e92
