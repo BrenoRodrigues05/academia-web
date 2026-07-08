@@ -1,83 +1,261 @@
-<<<<<<< HEAD
-
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
-
-=======
-
-# academia-web
+# 🏋️ Academia Web
 
 Frontend da Academia API desenvolvido com React, TypeScript e Material UI.
 
-> > > > > > > cac4732f3a0a9e29b4a1210a80315a75fbd06e92
+O projeto segue boas práticas de desenvolvimento, utilizando arquitetura baseada em features, React Router para navegação, Material UI para a interface, ESLint e Prettier para padronização do código e integração com a Academia API para autenticação e gerenciamento da academia.
+
+---
+
+# 🚀 Tecnologias Utilizadas
+
+## Frontend
+
+- React 19
+- TypeScript
+- Vite
+- React Router DOM
+- Material UI (MUI)
+- Emotion
+- ESLint
+- Prettier
+- npm
+
+---
+
+# 📂 Estrutura do Projeto
+
+```text
+src
+│
+├── api
+├── assets
+│
+├── components
+│   ├── common
+│   ├── forms
+│   ├── layout
+│   └── ui
+│
+├── features
+│   ├── auth
+│   ├── alunos
+│   ├── personais
+│   ├── planos
+│   ├── matriculas
+│   ├── treinos
+│   └── exercicios
+│
+├── hooks
+│
+├── layouts
+│
+├── pages
+│   ├── auth
+│   ├── dashboard
+│   └── not-found
+│
+├── routes
+├── services
+├── store
+├── styles
+├── types
+├── utils
+│
+├── App.tsx
+└── main.tsx
+```
+
+---
+
+# 🏛️ Arquitetura
+
+A aplicação segue uma arquitetura baseada em componentes reutilizáveis e organização por funcionalidades (Feature-Based Architecture).
+
+```text
+Pages
+    ↓
+Layouts
+    ↓
+Components
+    ↓
+Services
+    ↓
+Academia API
+```
+
+---
+
+## Responsabilidades
+
+| Camada     | Responsabilidade                  |
+| ---------- | --------------------------------- |
+| Pages      | Representam as telas da aplicação |
+| Layouts    | Estrutura visual reutilizável     |
+| Components | Componentes reutilizáveis         |
+| Features   | Organização das funcionalidades   |
+| Services   | Comunicação com a API             |
+| Hooks      | Hooks customizados                |
+| Store      | Gerenciamento de estado global    |
+| Types      | Tipagens TypeScript               |
+| Utils      | Funções utilitárias               |
+
+---
+
+# 🎨 Interface
+
+A interface utiliza Material UI como biblioteca de componentes.
+
+Recursos já implementados:
+
+- Tema Global
+- CSS Reset (CssBaseline)
+- Paleta de cores centralizada
+- Tipografia centralizada
+- Layout Base
+- Navbar
+- Sidebar
+
+---
+
+# 🛣️ Rotas
+
+Atualmente o projeto possui as seguintes rotas:
+
+```text
+/
+└── Login
+
+/dashboard
+└── Dashboard
+
+*
+└── Página 404
+```
+
+---
+
+# 📋 Estrutura de Layout
+
+```text
+┌────────────────────────────────────────────────────┐
+│ Navbar                                             │
+├────────────────────┬───────────────────────────────┤
+│                    │                               │
+│ Sidebar            │                               │
+│                    │                               │
+│                    │          Conteúdo             │
+│                    │                               │
+│                    │                               │
+└────────────────────┴───────────────────────────────┘
+```
+
+Este layout será reutilizado em todas as páginas autenticadas da aplicação.
+
+---
+
+# ⚙️ Como Executar
+
+## Clonar o projeto
+
+```bash
+git clone https://github.com/BrenoRodrigues05/academia-web.git
+```
+
+## Entrar na pasta
+
+```bash
+cd academia-web
+```
+
+## Instalar dependências
+
+```bash
+npm install
+```
+
+## Executar
+
+```bash
+npm run dev
+```
+
+A aplicação ficará disponível em:
+
+```text
+http://localhost:5173
+```
+
+---
+
+# 🧪 Roadmap
+
+## Estrutura
+
+- ✅ React + TypeScript
+- ✅ Vite
+- ✅ React Router
+- ✅ Material UI
+- ✅ Tema Global
+- ✅ Layout Base
+- ✅ Navbar
+- ✅ Sidebar
+- ✅ ESLint
+- ✅ Prettier
+
+## Autenticação
+
+- ⬜ Login
+- ⬜ JWT
+- ⬜ Axios
+- ⬜ Interceptors
+- ⬜ Rotas Protegidas
+- ⬜ Persistência da Sessão
+
+## Dashboard
+
+- ⬜ Cards
+- ⬜ KPIs
+- ⬜ Gráficos
+
+## CRUDs
+
+- ⬜ Alunos
+- ⬜ Personais
+- ⬜ Planos
+- ⬜ Matrículas
+- ⬜ Treinos
+- ⬜ Exercícios
+- ⬜ Itens de Treino
+
+## Melhorias
+
+- ⬜ Dark Mode
+- ⬜ Responsividade
+- ⬜ TanStack Query
+- ⬜ Zustand
+- ⬜ React Hook Form
+- ⬜ Zod
+- ⬜ Paginação
+- ⬜ Busca
+- ⬜ Filtros
+- ⬜ Docker
+- ⬜ GitHub Actions
+- ⬜ Deploy
+
+---
+
+# 👨‍💻 Autor
+
+## Breno Rodrigues
+
+Desenvolvedor Full Stack
+
+GitHub:
+
+https://github.com/BrenoRodrigues05
+
+---
+
+# ⭐ Projeto em evolução
+
+Este projeto está sendo desenvolvido juntamente com a **Academia API**, seguindo arquitetura moderna, boas práticas de desenvolvimento, componentes reutilizáveis, tipagem forte com TypeScript e padrões utilizados em aplicações React profissionais.
