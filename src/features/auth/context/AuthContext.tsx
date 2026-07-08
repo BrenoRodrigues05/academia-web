@@ -1,16 +1,20 @@
 import { createContext } from "react";
 
+import type {
+  LoginRequest,
+} from "../types/auth";
+
 interface AuthContextData {
+  token: string | null;
 
-    token: string | null;
+  login(
+    data: LoginRequest
+  ): Promise<void>;
 
-    login: () => void;
-
-    logout: () => void;
-
+  logout(): void;
 }
 
 export const AuthContext =
-    createContext<AuthContextData>(
-        {} as AuthContextData
-    );
+  createContext<AuthContextData>(
+    {} as AuthContextData
+  );

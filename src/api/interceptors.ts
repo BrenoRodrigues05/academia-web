@@ -1,15 +1,12 @@
-import api from "./axios";
+import type { AxiosInstance } from "axios";
 
-api.interceptors.request.use((config) => {
-  return config;
-});
+export function setupInterceptors(api: AxiosInstance) {
+  api.interceptors.request.use((config) => {
+    return config;
+  });
 
-api.interceptors.response.use(
-  (response) => response,
-
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-export default api;
+  api.interceptors.response.use(
+    (response) => response,
+    (error) => Promise.reject(error)
+  );
+}
