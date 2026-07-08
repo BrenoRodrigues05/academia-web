@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 import {
   IconButton,
@@ -21,6 +23,25 @@ export default function LoginPage() {
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
   const [showPassword, setShowPassword] = useState(false); 
+  const { login: signIn } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+  try {
+    setLoading(true);
+    setError("");
+
+    await signIn({login, senha});
+    navigate("/dashboard");
+
+  } catch {
+    setError("Login ou senha inválidos.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Container maxWidth="sm">
@@ -93,14 +114,28 @@ export default function LoginPage() {
                 },
               }}
             />
+            {error && (
+                <Typography
+                    color="error"
+                    variant="body2"
+                >
+                    {error}
+                </Typography>
+            )}
 
             <Button
               variant="contained"
               size="large"
               fullWidth
-            >
-              Entrar
-            </Button>
+              onClick={handleLogin}
+              disabled={
+                  loading ||
+                  login.trim() === "" ||
+                  senha.trim() === ""
+              }
+          >
+              {loading ? "Entrando..." : "Entrar"}
+          </Button>
           </Stack>
         </Paper>
       </Box>
