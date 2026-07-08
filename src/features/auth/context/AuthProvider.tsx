@@ -6,6 +6,7 @@ import {
 
 import { AuthContext } from "./AuthContext";
 import authService from "../services/authService";
+import tokenStorage from "../storage/tokenStorage";
 
 import type {
   LoginRequest,
@@ -22,8 +23,7 @@ export default function AuthProvider({
     useState<string | null>(null);
 
   useEffect(() => {
-    const storedToken =
-      localStorage.getItem("token");
+    const storedToken = tokenStorage.get();
 
     if (storedToken) {
       setToken(storedToken);
@@ -36,16 +36,13 @@ export default function AuthProvider({
     const response =
       await authService.login(data);
 
-    localStorage.setItem(
-      "token",
-      response.token
-    );
+    tokenStorage.save(response.token);
 
     setToken(response.token);
   }
 
   function logout() {
-    localStorage.removeItem("token");
+    tokenStorage.remove();
 
     setToken(null);
   }
