@@ -4,6 +4,7 @@ import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import SportsGymnasticsIcon from "@mui/icons-material/SportsGymnastics";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export interface MenuItem {
   label: string;
@@ -23,6 +24,11 @@ export const menuItems: MenuItem[] = [
     icon: SchoolIcon,
   },
   {
+    label: "Matrículas",
+    path: "/matriculas",
+    icon: AssignmentIcon,
+  },
+  {
     label: "Personais",
     path: "/personais",
     icon: FitnessCenterIcon,
@@ -33,13 +39,18 @@ export const menuItems: MenuItem[] = [
     icon: WorkspacePremiumIcon,
   },
   {
-    label: "Matrículas",
-    path: "/matriculas",
-    icon: AssignmentIcon,
-  },
-  {
     label: "Treinos",
     path: "/treinos",
     icon: SportsGymnasticsIcon,
   },
+  {
+        label: "Exercícios",
+        path: "/exercicios",
+        icon: FitnessCenterIcon,
+    },
 ];
+
+export const logoutItem = {
+    label: "Sair",
+    icon: LogoutIcon,
+};
