@@ -4,12 +4,13 @@ import LoginPage from "../pages/auth/LoginPage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
 import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route
     path="/dashboard"
     element={
