@@ -12,13 +12,25 @@ import {
 import { menuItems, logoutItem } from "./menu";
 import { Link, useLocation } from "react-router-dom";
 
+type SidebarProps = {
+
+    mobileOpen: boolean;
+
+    onClose: () => void;
+
+    isMobile: boolean;
+
+};
+
 const drawerWidth = 240;
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen, onClose, isMobile }: SidebarProps) {
   const location = useLocation();
   return (
     <Drawer
-      variant="permanent"
+    variant={isMobile ? "temporary" : "permanent"}
+    open={mobileOpen}
+    onClose={onClose}
       sx={{
         width: drawerWidth,
         "& .MuiDrawer-paper": {

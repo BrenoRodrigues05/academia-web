@@ -5,22 +5,32 @@ import {
 
 import Navbar from "@/components/navigation/Navbar";
 import Sidebar from "@/components/navigation/Sidebar";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useState } from "react";
 
 type Props = {
   children: React.ReactNode;
 };
 
-export default function MainLayout({
-  children,
-}: Props) {
-
+export default function MainLayout({children}: Props) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+};
   return (
 
     <Box sx={{ display: "flex" }}>
 
-      <Navbar />
+      <Navbar onMenuClick={handleDrawerToggle} />
 
-      <Sidebar />
+      <Sidebar
+        mobileOpen={mobileOpen}
+        onClose={handleDrawerToggle}
+        isMobile={isMobile}
+      />
 
       <Box
         component="main"

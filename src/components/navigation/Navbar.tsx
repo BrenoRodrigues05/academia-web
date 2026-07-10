@@ -4,10 +4,18 @@ import {
   Typography,
   Avatar,
   Box,
+  IconButton,
 } from "@mui/material";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import MenuIcon from "@mui/icons-material/Menu";
 
-export default function Navbar() {
+type NavbarProps = {
+
+    onMenuClick: () => void;
+
+};
+
+export default function Navbar({ onMenuClick }: NavbarProps) {
   const { user } = useAuth();
 
   return (
@@ -19,6 +27,23 @@ export default function Navbar() {
         >
           Academia Web
         </Typography>
+
+              <IconButton
+          color="inherit"
+          edge="start"
+          onClick={onMenuClick}
+          sx={{
+              mr: 2,
+              display: {
+                  xs: "flex",
+                  md: "none",
+              },
+          }}
+      >
+
+          <MenuIcon />
+
+      </IconButton>
 
         {user && (
           <Box
