@@ -1,21 +1,31 @@
-import Typography from "@mui/material/Typography";
-
 import MainLayout from "@/layouts/MainLayout";
+
+import {
+
+AppPageHeader,
+
+} from "@/components/ui";
+
+import DashboardStats from "../components/DashboardStats";
 
 export default function DashboardPage() {
 
-  return (
+return (
 
-    <MainLayout>
+<MainLayout>
 
-      <Typography variant="h4">
+<AppPageHeader
 
-        Dashboard
+title="Gerenciamento da Academia"
 
-      </Typography>
+subtitle="Visão geral da Academia"
 
-    </MainLayout>
+/>
 
-  );
+<DashboardStats />
+
+</MainLayout>
+
+);
 
 }
