@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import LoginPage from "../pages/auth/LoginPage";
-import DashboardPage from "../pages/dashboard/DashboardPage";
+import LoginPage from "../features/auth/pages/LoginPage";
+import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";

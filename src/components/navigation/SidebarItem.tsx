@@ -6,7 +6,7 @@ import {
 
 import { Link } from "react-router-dom";
 
-import type { MenuItem } from "@/config/menu";
+import type { MenuItem } from "@/components/navigation/menu";
 
 type Props = {
   item: MenuItem;

@@ -3,8 +3,8 @@ import {
   Toolbar,
 } from "@mui/material";
 
-import Navbar from "@/components/layout/Navbar";
-import Sidebar from "@/components/layout/Sidebar";
+import Navbar from "@/components/navigation/Navbar";
+import Sidebar from "@/components/navigation/Sidebar";
 
 type Props = {
   children: React.ReactNode;

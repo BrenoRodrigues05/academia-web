@@ -9,7 +9,7 @@ import {
     ListItemText,
     Divider,
 } from "@mui/material";
-import { menuItems, logoutItem } from "../../config/menu";
+import { menuItems, logoutItem } from "./menu";
 import { Link, useLocation } from "react-router-dom";
 
 const drawerWidth = 240;
