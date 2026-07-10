@@ -1,10 +1,19 @@
-const palette = {
+import type { PaletteOptions } from "@mui/material/styles";
+
+export const palette: PaletteOptions = {
+  mode: "light",
+
   primary: {
     main: "#1976d2",
   },
 
   secondary: {
-    main: "#2e7d32",
+    main: "#43a047",
+  },
+
+  background: {
+    default: "#f5f7fb",
+    paper: "#ffffff",
   },
 
   error: {
@@ -19,10 +28,7 @@ const palette = {
     main: "#2e7d32",
   },
 
-  background: {
-    default: "#f5f5f5",
-    paper: "#ffffff",
+  info: {
+    main: "#0288d1",
   },
 };
-
-export default palette;
