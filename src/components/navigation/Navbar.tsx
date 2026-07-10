@@ -21,14 +21,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
   return (
     <AppBar position="fixed">
       <Toolbar>
-        <Typography
-          variant="h6"
-          sx={{ flexGrow: 1 }}
-        >
-          Academia Web
-        </Typography>
-
-              <IconButton
+        <IconButton
           color="inherit"
           edge="start"
           onClick={onMenuClick}
@@ -44,6 +37,12 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
           <MenuIcon />
 
       </IconButton>
+        <Typography
+          variant="h6"
+          sx={{ flexGrow: 1 }}
+        >
+          Academia Web
+        </Typography>
 
         {user && (
           <Box
