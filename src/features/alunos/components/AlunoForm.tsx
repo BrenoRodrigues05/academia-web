@@ -49,8 +49,12 @@ export default function AlunoForm({
     return (
 
         <form
+
+            id="aluno-form"
+
             onSubmit={handleSubmit(onSubmit)}
-        >
+
+            >
 
             <Grid container spacing={2}>
 
