@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button } from "@mui/material"; 
+import { Box, Button, Snackbar, Alert } from "@mui/material"; 
 import AddIcon from "@mui/icons-material/Add"; 
 
 import MainLayout from "@/layouts/MainLayout";
@@ -20,9 +20,13 @@ export default function AlunosPage() {
     loading,
     page,
     setPage,
+    create, 
+    notification, 
+    closeNotification, 
   } = useAlunos();
 
-  const [open, setOpen] = useState(false); 
+  const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false); 
 
   return (
     <MainLayout>
@@ -44,10 +48,18 @@ export default function AlunosPage() {
       <AlunoDialog
         open={open}
         title="Novo Aluno"
-        onClose={() => setOpen(false)}
-        onSubmit={async (data) => {
-          console.log(data);
-          setOpen(false); 
+        loading={submitting} 
+        onClose={() => !submitting && setOpen(false)}
+        onSubmit={async (formData) => {
+          setSubmitting(true);
+          try {
+            await create(formData); 
+            setOpen(false); 
+          } catch (error) {
+            console.error("Falha na submissão:", error);
+          } finally {
+            setSubmitting(false);
+          }
         }}
       />
 
@@ -74,6 +86,22 @@ export default function AlunosPage() {
           />
         </Box>
       )}
+
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={4000} 
+        onClose={closeNotification}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert 
+          onClose={closeNotification} 
+          severity={notification.severity} 
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </MainLayout>
   );
 }
