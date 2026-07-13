@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { Box, Button, Snackbar, Alert } from "@mui/material"; 
-import AddIcon from "@mui/icons-material/Add"; 
+import { Box, Snackbar, Alert } from "@mui/material"; 
 
 import MainLayout from "@/layouts/MainLayout";
 import {
-  AppPageHeader,
   AppPagination,
-  AppSearch,
   AppLoading,
 } from "@/components/ui";
-
+import CrudToolbar from "@/components/crud/CrudToolbar";
 import AlunoTable from "../components/AlunoTable";
 import useAlunos from "../hooks/useAlunos";
 import AlunoDialog from "../components/AlunoDialog";
@@ -30,19 +27,13 @@ export default function AlunosPage() {
 
   return (
     <MainLayout>
-      <AppPageHeader
+      <CrudToolbar
         title="Alunos"
         subtitle="Gerenciamento de alunos"
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => setOpen(true)} 
-          >
-            Novo Aluno
-          </Button>
-        }
+        searchPlaceholder="Pesquisar alunos"
+        createLabel="Novo Aluno"
+        onCreate={() => setOpen(true)} 
+        onSearch={console.log}
       />
 
       <AlunoDialog
@@ -62,16 +53,6 @@ export default function AlunosPage() {
           }
         }}
       />
-
-      <Box sx={{ mb: 3 }}>
-        <AppSearch
-          placeholder="Pesquisar alunos"
-          onSearch={(value) => {
-            console.log(value);
-          }}
-        />
-      </Box>
-
       {loading && <AppLoading />}
 
       {!loading && data && (
