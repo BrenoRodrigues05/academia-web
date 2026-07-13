@@ -1,14 +1,8 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
-
-import type { AlunoSchema } from "../validation/alunoSchema";
+import CrudDialog from "@/components/crud/CrudDialog";
 
 import AlunoForm from "./AlunoForm";
+
+import type { AlunoSchema } from "../validation/alunoSchema";
 
 type Props = {
 
@@ -16,13 +10,9 @@ type Props = {
 
     loading?: boolean;
 
-    title: string;
+    onClose(): void;
 
-    defaultValues?: Partial<AlunoSchema>;
-
-    onClose: () => void;
-
-    onSubmit: (data: AlunoSchema) => Promise<void>;
+    onSubmit(data: AlunoSchema): Promise<void>;
 
 };
 
@@ -30,11 +20,7 @@ export default function AlunoDialog({
 
     open,
 
-    loading = false,
-
-    title,
-
-    defaultValues,
+    loading,
 
     onClose,
 
@@ -44,61 +30,25 @@ export default function AlunoDialog({
 
     return (
 
-        <Dialog
+        <CrudDialog
+
             open={open}
-            onClose={loading ? undefined : onClose}
-            fullWidth
-            maxWidth="md"
+
+            title="Aluno"
+
+            loading={loading}
+
+            onClose={onClose}
+
         >
 
-            <DialogTitle>
+            <AlunoForm
 
-                {title}
+                onSubmit={onSubmit}
 
-            </DialogTitle>
+            />
 
-            <DialogContent>
-
-                <AlunoForm
-
-                    defaultValues={defaultValues}
-
-                    onSubmit={onSubmit}
-
-                />
-
-            </DialogContent>
-
-            <DialogActions>
-
-                <Button
-                    disabled={loading}
-                    onClick={onClose}
-                >
-
-                    Cancelar
-
-                </Button>
-
-                <Button
-
-                    form="aluno-form"
-
-                    type="submit"
-
-                    variant="contained"
-
-                    disabled={loading}
-
-                >
-
-                    Salvar
-
-                </Button>
-
-            </DialogActions>
-
-        </Dialog>
+        </CrudDialog>
 
     );
 

@@ -50,7 +50,7 @@ export default function AlunoForm({
 
         <form
 
-            id="aluno-form"
+            id="crud-form"
 
             onSubmit={handleSubmit(onSubmit)}
 
