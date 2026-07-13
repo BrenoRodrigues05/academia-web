@@ -1,8 +1,5 @@
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton, Stack } from "@mui/material";
-
 import CrudTable from "@/components/crud/CrudTable"; 
+import CrudActions from "@/components/crud/CrudActions";
 import type { CrudColumn } from "@/components/crud/types";
 import type { Aluno } from "../types/Aluno";
 
@@ -42,27 +39,10 @@ export default function AlunoTable({
       align: "center",
       width: 120,
       render: (aluno) => (
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{ justifyContent: "center" }}
-        >
-          <IconButton 
-            color="primary" 
-            onClick={() => onEdit?.(aluno)}
-            aria-label="Editar aluno"
-          >
-            <EditIcon />
-          </IconButton>
-
-          <IconButton 
-            color="error" 
-            onClick={() => onDelete?.(aluno)}
-            aria-label="Deletar aluno"
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Stack>
+        <CrudActions
+          onEdit={() => onEdit?.(aluno)}
+          onDelete={() => onDelete?.(aluno)}
+        />
       ),
     },
   ];
