@@ -1,24 +1,24 @@
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { IconButton, Stack } from "@mui/material";
 
-import {
-  IconButton,
-  Stack,
-} from "@mui/material";
-
-import { AppTable } from "@/components/ui";
-
+import CrudTable from "@/components/crud/CrudTable"; 
+import type { CrudColumn } from "@/components/crud/types";
 import type { Aluno } from "../types/Aluno";
 
 type Props = {
   alunos: Aluno[];
+  onEdit?: (aluno: Aluno) => void;
+  onDelete?: (aluno: Aluno) => void;
 };
 
 export default function AlunoTable({
   alunos,
+  onEdit,
+  onDelete,
 }: Props) {
 
-  const columns = [
+  const columns: CrudColumn<Aluno>[] = [
     {
       field: "nome",
       header: "Nome",
@@ -34,35 +34,44 @@ export default function AlunoTable({
     {
       field: "sexo",
       header: "Sexo",
-      align: "center" as const,
+      align: "center",
     },
     {
       field: "id",
       header: "Ações",
-      align: "center" as const,
-      render: (aluno: Aluno) => (
+      align: "center",
+      width: 120,
+      render: (aluno) => (
         <Stack
-          sx={{
-            flexDirection: "row",
-            justifyContent: "center",
-          }}
+          direction="row"
+          spacing={1}
+          sx={{ justifyContent: "center" }}
         >
-          <IconButton>
+          <IconButton 
+            color="primary" 
+            onClick={() => onEdit?.(aluno)}
+            aria-label="Editar aluno"
+          >
             <EditIcon />
           </IconButton>
 
-          <IconButton color="error">
+          <IconButton 
+            color="error" 
+            onClick={() => onDelete?.(aluno)}
+            aria-label="Deletar aluno"
+          >
             <DeleteIcon />
           </IconButton>
         </Stack>
       ),
     },
-  ] as const; 
+  ];
 
   return (
-    <AppTable
-      columns={columns as any} 
+    <CrudTable<Aluno>
+      columns={columns}
       rows={alunos}
+      rowKey={(aluno) => aluno.id} 
     />
   );
 }
