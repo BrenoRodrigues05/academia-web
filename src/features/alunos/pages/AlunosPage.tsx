@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Box, Snackbar, Alert } from "@mui/material"; 
+import { Snackbar, Alert } from "@mui/material"; 
 
-import MainLayout from "@/layouts/MainLayout";
+import CrudPage from "@/components/crud/CrudPage";
 import {
   AppPagination,
   AppLoading,
@@ -26,47 +26,51 @@ export default function AlunosPage() {
   const [submitting, setSubmitting] = useState(false); 
 
   return (
-    <MainLayout>
-      <CrudToolbar
-        title="Alunos"
-        subtitle="Gerenciamento de alunos"
-        searchPlaceholder="Pesquisar alunos"
-        createLabel="Novo Aluno"
-        onCreate={() => setOpen(true)} 
-        onSearch={console.log}
-      />
-
-      <AlunoDialog
-        open={open}
-        title="Novo Aluno"
-        loading={submitting} 
-        onClose={() => !submitting && setOpen(false)}
-        onSubmit={async (formData) => {
-          setSubmitting(true);
-          try {
-            await create(formData); 
-            setOpen(false); 
-          } catch (error) {
-            console.error("Falha na submissão:", error);
-          } finally {
-            setSubmitting(false);
-          }
-        }}
-      />
-      {loading && <AppLoading />}
-
-      {!loading && data && (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          <AlunoTable alunos={data.content} />
-          
-          <AppPagination
-            page={page}
-            totalPages={data.totalPages}
-            totalElements={data.totalElements}
-            onChange={setPage}
+    <>
+      <CrudPage
+        toolbar={
+          <CrudToolbar
+            title="Alunos"
+            subtitle="Gerenciamento de alunos"
+            searchPlaceholder="Pesquisar alunos"
+            createLabel="Novo Aluno"
+            onCreate={() => setOpen(true)} 
+            onSearch={console.log}
           />
-        </Box>
-      )}
+        }
+        table={
+          loading ? <AppLoading /> : data ? <AlunoTable alunos={data.content} /> : null
+        }
+        pagination={
+          !loading && data ? (
+            <AppPagination
+              page={page}
+              totalPages={data.totalPages}
+              totalElements={data.totalElements}
+              onChange={setPage}
+            />
+          ) : undefined
+        }
+        dialogs={
+          <AlunoDialog
+            open={open}
+            title="Novo Aluno"
+            loading={submitting} 
+            onClose={() => !submitting && setOpen(false)}
+            onSubmit={async (formData) => {
+              setSubmitting(true);
+              try {
+                await create(formData); 
+                setOpen(false); 
+              } catch (error) {
+                console.error("Falha na submissão:", error);
+              } finally {
+                setSubmitting(false);
+              }
+            }}
+          />
+        }
+      />
 
       <Snackbar
         open={notification.open}
@@ -83,6 +87,6 @@ export default function AlunosPage() {
           {notification.message}
         </Alert>
       </Snackbar>
-    </MainLayout>
+    </>
   );
 }
