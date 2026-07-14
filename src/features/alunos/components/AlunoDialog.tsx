@@ -3,6 +3,7 @@ import CrudDialog from "@/components/crud/CrudDialog";
 import AlunoForm from "./AlunoForm";
 
 import type { AlunoSchema } from "../validation/alunoSchema";
+import type { Aluno } from "../types/Aluno";
 
 type Props = {
 
@@ -13,6 +14,9 @@ type Props = {
     onClose(): void;
 
     onSubmit(data: AlunoSchema): Promise<void>;
+
+    title: string;         
+    aluno?: Aluno | null;
 
 };
 
@@ -26,6 +30,9 @@ export default function AlunoDialog({
 
     onSubmit,
 
+    title,             
+    aluno,
+
 }: Props) {
 
     return (
@@ -34,7 +41,7 @@ export default function AlunoDialog({
 
             open={open}
 
-            title="Aluno"
+            title={title}
 
             loading={loading}
 
@@ -45,6 +52,7 @@ export default function AlunoDialog({
             <AlunoForm
 
                 onSubmit={onSubmit}
+                defaultValues={aluno || undefined}
 
             />
 

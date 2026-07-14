@@ -7,12 +7,14 @@ type Props = {
   alunos: Aluno[];
   onEdit?: (aluno: Aluno) => void;
   onDelete?: (aluno: Aluno) => void;
+  onDeactivate?: (aluno: Aluno) => void;
 };
 
 export default function AlunoTable({
   alunos,
   onEdit,
   onDelete,
+  onDeactivate,
 }: Props) {
 
   const columns: CrudColumn<Aluno>[] = [
@@ -37,11 +39,12 @@ export default function AlunoTable({
       field: "id",
       header: "Ações",
       align: "center",
-      width: 120,
+      width: 160,
       render: (aluno) => (
         <CrudActions
           onEdit={() => onEdit?.(aluno)}
           onDelete={() => onDelete?.(aluno)}
+          onDeactivate={onDeactivate ? () => onDeactivate(aluno) : undefined}
         />
       ),
     },

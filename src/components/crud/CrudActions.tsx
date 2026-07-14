@@ -1,5 +1,6 @@
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import BlockIcon from "@mui/icons-material/Block";
 
 import {
     IconButton,
@@ -13,6 +14,8 @@ type Props = {
 
     onDelete(): void;
 
+    onDeactivate?(): void;
+
 };
 
 export default function CrudActions({
@@ -20,6 +23,8 @@ export default function CrudActions({
     onEdit,
 
     onDelete,
+
+    onDeactivate,
 
 }: Props) {
 
@@ -30,6 +35,17 @@ export default function CrudActions({
             sx={{ justifyContent: "center" }}
             spacing={1}
         >
+
+            {onDeactivate && (
+            <Tooltip title="Alterar Status do Aluno">
+            <IconButton
+            color="warning" 
+            onClick={onDeactivate}
+            >
+            <BlockIcon />
+            </IconButton>
+        </Tooltip>
+        )}
 
             <Tooltip title="Editar">
 
@@ -56,7 +72,7 @@ export default function CrudActions({
                 </IconButton>
 
             </Tooltip>
-
+            
         </Stack>
 
     );

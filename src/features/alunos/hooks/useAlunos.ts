@@ -1,6 +1,7 @@
 import { useCrud } from "@/api/hooks/useCrud";
 import { useState } from "react";
 import AlunoService from "../services/AlunoService";
+import type { Aluno } from "../types/Aluno";
 
 export type NotificationState = {
   open: boolean;
@@ -58,6 +59,31 @@ export default function useAlunos() {
     }
   }
 
+  async function desativar(aluno: Aluno) {
+  if (!aluno || !aluno.id) return;
+
+  try {
+    const statusAtual = aluno.usuario?.ativo ?? false;
+    const novoStatus = !statusAtual;
+
+    await AlunoService.desativar(aluno.id, novoStatus);
+
+    setNotification({
+      open: true,
+      message: `Aluno ${novoStatus ? "ativado" : "desativado"} com sucesso!`,
+      severity: "success",
+    });
+    await crud.reload();
+
+  } catch (error) {
+    setNotification({
+      open: true,
+      message: "Erro ao alterar o status do aluno.",
+      severity: "error",
+    });
+  }
+}
+
   async function remove(id: number) {
     try {
       await AlunoService.delete(id);
@@ -81,6 +107,7 @@ export default function useAlunos() {
     create,
     update,
     remove,
+    desativar,
     notification,
     closeNotification,
   };

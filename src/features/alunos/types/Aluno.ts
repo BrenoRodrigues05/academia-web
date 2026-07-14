@@ -12,4 +12,10 @@ export interface Aluno {
 
     sexo: string;
 
+    usuario?: {
+
+        id: number;
+
+        ativo: boolean;
+    };
 }

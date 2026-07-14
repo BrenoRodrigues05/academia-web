@@ -10,4 +10,9 @@ export interface AlunoUpdate {
 
     sexo: string;
 
+    usuario?: {
+
+        id: number;
+        ativo: boolean;
+    };
 }

@@ -48,4 +48,11 @@ export default class BaseCrudService<T> {
       `${this.endpoint}/${id}`
     );
   }
+
+async desativar(id: number, novoStatus: boolean) {
+    await api.patch<T>(
+    `${this.endpoint}/${id}/ativo`, null, {
+    params: { novoStatus }
+  });
+}
 }
