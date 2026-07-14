@@ -17,9 +17,51 @@ export default function useAlunos() {
     severity: "success",
   });
 
+  const [searchResults, setSearchResults] = useState<Aluno[] | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [lastSearch, setLastSearch] = useState<string>("");
+
   const closeNotification = () => {
     setNotification((prev) => ({ ...prev, open: false }));
   };
+
+  async function searchByNome(nome: string) {
+  const termoFormatado = nome.trim();
+
+  if (termoFormatado === lastSearch) {
+    return;
+  }
+
+  setLastSearch(termoFormatado);
+
+  if (!termoFormatado) {
+    setSearchResults(null);
+    return;
+  }
+
+  setSearchLoading(true);
+  try {
+    const resultados = await AlunoService.findByNome(termoFormatado);
+    setSearchResults(resultados);
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      setSearchResults([]); 
+      setNotification({
+        open: true,
+        message: "Nenhum aluno encontrado com esse nome.",
+        severity: "error",
+      });
+    } else {
+      setNotification({
+        open: true,
+        message: "Erro ao realizar a busca por nome.",
+        severity: "error",
+      });
+    }
+  } finally {
+    setSearchLoading(false);
+  }
+}
 
   async function create(data: unknown) {
     try {
@@ -29,6 +71,7 @@ export default function useAlunos() {
         message: "Aluno cadastrado com sucesso!",
         severity: "success",
       });
+      setSearchResults(null);
       await crud.reload();
     } catch (error) {
       setNotification({
@@ -48,6 +91,7 @@ export default function useAlunos() {
         message: "Aluno atualizado com sucesso!",
         severity: "success",
       });
+      setSearchResults(null);
       await crud.reload();
     } catch (error) {
       setNotification({
@@ -104,6 +148,12 @@ export default function useAlunos() {
 
   return {
     ...crud,
+    data: searchResults !== null 
+      ? { content: searchResults, totalPages: 1, totalElements: searchResults.length } 
+      : crud.data,
+    loading: crud.loading || searchLoading,
+    isSearching: searchResults !== null,
+    searchByNome,
     create,
     update,
     remove,

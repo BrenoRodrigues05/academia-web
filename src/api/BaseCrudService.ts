@@ -2,7 +2,7 @@ import api from "@/api/axios";
 import type { PageResponse } from "./types/PageResponse";
 
 export default class BaseCrudService<T> {
-  private readonly endpoint: string;
+  protected readonly endpoint: string;
   constructor(endpoint: string) {
     this.endpoint = endpoint;
   }

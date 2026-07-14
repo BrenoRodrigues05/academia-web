@@ -21,6 +21,8 @@ export default function AlunosPage() {
     loading,
     page,
     setPage,
+    isSearching,
+    searchByNome,
     create,
     update, 
     desativar,
@@ -108,10 +110,10 @@ export default function AlunosPage() {
               <CrudToolbar
                 title="Alunos"
                 subtitle="Gerenciamento de alunos"
-                searchPlaceholder="Pesquisar alunos"
+                searchPlaceholder="Pesquisar por nome"
                 createLabel="Novo Aluno"
                 onCreate={handleCreateOpen} 
-                onSearch={console.log}
+                onSearch={(texto) => searchByNome(texto)}
               />
             </Box>
             <Box sx={{ display: "flex", justifyContent: "flex-start", width: "100%", mt: -1 }}>
@@ -144,7 +146,7 @@ export default function AlunosPage() {
           ) : null
         }
         pagination={
-          !loading && data ? (
+          !loading && data && !isSearching ? (
             <AppPagination
               page={page}
               totalPages={data.totalPages}
