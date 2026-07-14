@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Snackbar, Alert } from "@mui/material"; 
+import { Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material"; 
 
 import CrudPage from "@/components/crud/CrudPage";
 import {
@@ -10,7 +10,10 @@ import CrudToolbar from "@/components/crud/CrudToolbar";
 import AlunoTable from "../components/AlunoTable";
 import useAlunos from "../hooks/useAlunos";
 import AlunoDialog from "../components/AlunoDialog";
+import ConfirmDialog from "@/components/feedback/ConfirmDialog";
 import type { Aluno } from "../types/Aluno"; 
+
+type StatusFilterType = "todos" | "ativos" | "inativos";
 
 export default function AlunosPage() {
   const {
@@ -30,6 +33,11 @@ export default function AlunosPage() {
   const [submitting, setSubmitting] = useState(false);
   
   const [selectedAluno, setSelectedAluno] = useState<Aluno | null>(null);
+  const [statusFilter, setStatusFilter] = useState<StatusFilterType>("todos");
+
+  const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [alunoTarget, setAlunoTarget] = useState<Aluno | null>(null);
 
   const handleCreateOpen = () => {
     setSelectedAluno(null);
@@ -48,56 +56,90 @@ export default function AlunosPage() {
     }
   };
 
-  const handleDeactivate = async (aluno: Aluno) => {
-  if (!aluno || aluno.id === undefined) {
-    console.error("Erro: Objeto de aluno inválido ou ID inexistente!");
-    return;
-  }
+  const handleDeactivateClick = (aluno: Aluno) => {
+    if (!aluno || aluno.id === undefined) return;
+    setAlunoTarget(aluno);
+    setDeactivateDialogOpen(true);
+  };
 
-  const statusAtual = aluno.usuario?.ativo ?? false;
-  const acao = statusAtual ? "desativar" : "ativar";
-  
-  if (window.confirm(`Deseja realmente ${acao} o aluno ${aluno.nome}?`)) {
+  const confirmDeactivate = async () => {
+    if (!alunoTarget) return;
     try {
-      await desativar(aluno); 
+      await desativar(alunoTarget); 
     } catch (error) {
-      console.error(`Falha ao ${acao} aluno:`, error);
-    }
-  }
-};
-
-  const handleDelete = async (aluno: Aluno) => {
-    if (window.confirm(`ATENÇÃO: Deseja realmente EXCLUIR PERMANENTEMENTE o aluno ${aluno.nome}? Essa ação não pode ser desfeita.`)) {
-      try {
-        await remove(aluno.id);
-      } catch (error) {
-        console.error("Falha ao deletar aluno:", error);
-      }
+      console.error("Falha ao alterar status do aluno:", error);
+    } finally {
+      setDeactivateDialogOpen(false);
+      setAlunoTarget(null);
     }
   };
+
+  const handleDeleteClick = (aluno: Aluno) => {
+    if (!aluno || aluno.id === undefined) return;
+    setAlunoTarget(aluno);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!alunoTarget || alunoTarget.id === undefined) return;
+    try {
+      await remove(alunoTarget.id);
+    } catch (error) {
+      console.error("Falha ao deletar aluno:", error);
+    } finally {
+      setDeleteDialogOpen(false);
+      setAlunoTarget(null);
+    }
+  };
+
+  const filteredAlunos = data?.content.filter((aluno) => {
+    if (statusFilter === "todos") return true;
+    
+    const isAtivo = aluno.usuario?.ativo ?? false;
+    return statusFilter === "ativos" ? isAtivo : !isAtivo;
+  }) ?? [];
 
   return (
     <>
       <CrudPage
         toolbar={
-          <CrudToolbar
-            title="Alunos"
-            subtitle="Gerenciamento de alunos"
-            searchPlaceholder="Pesquisar alunos"
-            createLabel="Novo Aluno"
-            onCreate={handleCreateOpen} 
-            onSearch={console.log}
-          />
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
+            <Box sx={{ flexGrow: 1, width: "100%" }}>
+              <CrudToolbar
+                title="Alunos"
+                subtitle="Gerenciamento de alunos"
+                searchPlaceholder="Pesquisar alunos"
+                createLabel="Novo Aluno"
+                onCreate={handleCreateOpen} 
+                onSearch={console.log}
+              />
+            </Box>
+            <Box sx={{ display: "flex", justifyContent: "flex-start", width: "100%", mt: -1 }}>
+              <FormControl size="small" sx={{ minWidth: 200 }}>
+                <InputLabel id="status-filter-label">Status do Usuário</InputLabel>
+                <Select
+                  labelId="status-filter-label"
+                  value={statusFilter}
+                  label="Status do Usuário"
+                  onChange={(e) => setStatusFilter(e.target.value as StatusFilterType)}
+                >
+                  <MenuItem value="todos">Todos</MenuItem>
+                  <MenuItem value="ativos">Ativos</MenuItem>
+                  <MenuItem value="inativos">Inativos</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
         }
         table={
           loading ? (
             <AppLoading />
           ) : data ? (
             <AlunoTable 
-              alunos={data.content} 
+              alunos={filteredAlunos} 
               onEdit={handleEditOpen} 
-              onDelete={handleDelete} 
-              onDeactivate={handleDeactivate} 
+              onDelete={handleDeleteClick}
+              onDeactivate={handleDeactivateClick} 
             />
           ) : null
         }
@@ -135,6 +177,24 @@ export default function AlunosPage() {
             }}
           />
         }
+      />
+      <ConfirmDialog
+        open={deactivateDialogOpen}
+        severity="warning" 
+        title={alunoTarget?.usuario?.ativo ? "Desativar Aluno" : "Ativar Aluno"}
+        message={`Deseja realmente ${alunoTarget?.usuario?.ativo ? "desativar" : "ativar"} o cadastro do aluno ${alunoTarget?.nome}?`}
+        confirmText={alunoTarget?.usuario?.ativo ? "Desativar" : "Ativar"}
+        onCancel={() => setDeactivateDialogOpen(false)}
+        onConfirm={confirmDeactivate}
+      />
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        severity="error" 
+        title="Excluir Aluno Permanentemente"
+        message={`ATENÇÃO: Deseja realmente excluir permanentemente o aluno ${alunoTarget?.nome}? Esta ação não poderá ser desfeita.`}
+        confirmText="Excluir"
+        onCancel={() => setDeleteDialogOpen(false)}
+        onConfirm={confirmDelete}
       />
 
       <Snackbar

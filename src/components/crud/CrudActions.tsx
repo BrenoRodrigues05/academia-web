@@ -1,80 +1,61 @@
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import BlockIcon from "@mui/icons-material/Block";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-import {
+    import {
     IconButton,
     Stack,
     Tooltip,
-} from "@mui/material";
+    } from "@mui/material";
 
-type Props = {
-
+    type Props = {
     onEdit(): void;
-
     onDelete(): void;
-
     onDeactivate?(): void;
-
-};
+    isAtivo?: boolean; 
+    };
 
 export default function CrudActions({
-
     onEdit,
-
     onDelete,
-
     onDeactivate,
-
-}: Props) {
-
+    isAtivo = true, 
+    }: Props) {
     return (
-
-        <Stack
-            direction="row"
-            sx={{ justifyContent: "center" }}
-            spacing={1}
-        >
-
-            {onDeactivate && (
-            <Tooltip title="Alterar Status do Aluno">
+    <Stack
+        direction="row"
+        sx={{ justifyContent: "center" }}
+        spacing={1}
+    >
+        {onDeactivate && (
+            <Tooltip title={isAtivo ? "Desativar" : "Ativar"}>
             <IconButton
-            color="warning" 
-            onClick={onDeactivate}
+                color={isAtivo ? "warning" : "success"} 
+                onClick={onDeactivate}
             >
-            <BlockIcon />
+                {isAtivo ? <BlockIcon /> : <CheckCircleIcon />}
             </IconButton>
-        </Tooltip>
+            </Tooltip>
         )}
 
-            <Tooltip title="Editar">
+        <Tooltip title="Editar">
+            <IconButton
+            color="primary"
+            onClick={onEdit}
+            >
+            <EditIcon />
+            </IconButton>
+        </Tooltip>
 
-                <IconButton
-                    color="primary"
-                    onClick={onEdit}
-                >
-
-                    <EditIcon />
-
-                </IconButton>
-
-            </Tooltip>
-
-            <Tooltip title="Excluir">
-
-                <IconButton
-                    color="error"
-                    onClick={onDelete}
-                >
-
-                    <DeleteIcon />
-
-                </IconButton>
-
-            </Tooltip>
-            
+        <Tooltip title="Excluir">
+            <IconButton
+            color="error"
+            onClick={onDelete}
+            >
+            <DeleteIcon />
+            </IconButton>
+        </Tooltip>
         </Stack>
-
     );
-
 }

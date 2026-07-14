@@ -2,6 +2,7 @@ import CrudTable from "@/components/crud/CrudTable";
 import CrudActions from "@/components/crud/CrudActions";
 import type { CrudColumn } from "@/components/crud/types";
 import type { Aluno } from "../types/Aluno";
+import { Chip } from "@mui/material";
 
 type Props = {
   alunos: Aluno[];
@@ -36,6 +37,23 @@ export default function AlunoTable({
       align: "center",
     },
     {
+      field: "usuario", 
+      header: "Status",
+      align: "center",
+      render: (aluno) => {
+        const isAtivo = aluno.usuario?.ativo ?? false;
+        return (
+          <Chip
+            label={isAtivo ? "Ativo" : "Inativo"}
+            size="small"
+            color={isAtivo ? "success" : "error"}
+            variant="filled"
+            sx={{ fontWeight: "bold", minWidth: 80 }}
+          />
+        );
+      },
+    },
+    {
       field: "id",
       header: "Ações",
       align: "center",
@@ -45,6 +63,7 @@ export default function AlunoTable({
           onEdit={() => onEdit?.(aluno)}
           onDelete={() => onDelete?.(aluno)}
           onDeactivate={onDeactivate ? () => onDeactivate(aluno) : undefined}
+          isAtivo={aluno.usuario?.ativo ?? false}
         />
       ),
     },
