@@ -12,6 +12,9 @@ import useAlunos from "../hooks/useAlunos";
 import AlunoDialog from "../components/AlunoDialog";
 import ConfirmDialog from "@/components/feedback/ConfirmDialog";
 import type { Aluno } from "../types/Aluno"; 
+import { Sexo } from "@/shared/enums/Sexo";
+
+type SexoFilterType = "todos" | Sexo;
 
 type StatusFilterType = "todos" | "ativos" | "inativos";
 
@@ -44,6 +47,9 @@ export default function AlunosPage() {
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [alunoTarget, setAlunoTarget] = useState<Aluno | null>(null);
+
+  const [sexoFilter, setSexoFilter] = useState<SexoFilterType>("todos");
+
 
   const handleCreateOpen = () => {
     setSelectedAluno(null);
@@ -119,10 +125,14 @@ export default function AlunosPage() {
 
   const filteredAlunos = (data && Array.isArray(data.content))
   ? data.content.filter((aluno) => {
-      if (statusFilter === "todos") return true;
+      const passaStatus = statusFilter === "todos" 
+        ? true 
+        : (aluno.usuario?.ativo ?? false) === (statusFilter === "ativos");
+      const passaSexo = sexoFilter === "todos" 
+        ? true 
+        : aluno.sexo === sexoFilter;
 
-      const isAtivo = aluno.usuario?.ativo ?? false;
-      return statusFilter === "ativos" ? isAtivo : !isAtivo;
+      return passaStatus && passaSexo;
     })
   : [];
 
@@ -162,7 +172,6 @@ export default function AlunosPage() {
                 <MenuItem value="email">E-mail</MenuItem>
               </Select>
             </FormControl>
-
             <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
               <InputLabel id="status-filter-label">Status do Usuário</InputLabel>
               <Select
@@ -174,6 +183,19 @@ export default function AlunosPage() {
                 <MenuItem value="todos">Todos</MenuItem>
                 <MenuItem value="ativos">Ativos</MenuItem>
                 <MenuItem value="inativos">Inativos</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl size="small" sx={{ minWidth: 160, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+              <InputLabel id="sexo-filter-label">Gênero</InputLabel>
+              <Select
+                labelId="sexo-filter-label"
+                value={sexoFilter}
+                label="Gênero"
+                onChange={(e) => setSexoFilter(e.target.value as SexoFilterType)}
+              >
+                <MenuItem value="todos">Todos os gêneros</MenuItem>
+                <MenuItem value={Sexo.MASCULINO}>Masculino</MenuItem>
+                <MenuItem value={Sexo.FEMININO}>Feminino</MenuItem>
               </Select>
             </FormControl>
           </Box>
