@@ -6,10 +6,9 @@ import {
   AppPagination,
   AppLoading,
 } from "@/components/ui";
+import { AlunoDialog, AlunoTable} from "../components";
 import CrudToolbar from "@/components/crud/CrudToolbar";
-import AlunoTable from "../components/AlunoTable";
 import useAlunos from "../hooks/useAlunos";
-import AlunoDialog from "../components/AlunoDialog";
 import ConfirmDialog from "@/components/feedback/ConfirmDialog";
 import type { Aluno } from "../types/Aluno"; 
 import { Sexo } from "@/shared/enums/Sexo";
