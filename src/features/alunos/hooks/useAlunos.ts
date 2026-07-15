@@ -9,6 +9,11 @@ export type NotificationState = {
   severity: "success" | "error";
 };
 
+type LastSearchState = {
+  type: "nome" | "email" | null;
+  term: string;
+};
+
 export default function useAlunos() {
   const crud = useCrud(AlunoService);
   const [notification, setNotification] = useState<NotificationState>({
@@ -19,7 +24,10 @@ export default function useAlunos() {
 
   const [searchResults, setSearchResults] = useState<Aluno[] | null>(null);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [lastSearch, setLastSearch] = useState<string>("");
+  const [lastSearch, setLastSearch] = useState<LastSearchState>({
+    type: null,
+    term: "",
+  });
 
   const closeNotification = () => {
     setNotification((prev) => ({ ...prev, open: false }));
@@ -28,11 +36,14 @@ export default function useAlunos() {
   async function searchByNome(nome: string) {
   const termoFormatado = nome.trim();
 
-  if (termoFormatado === lastSearch) {
+  if (termoFormatado === lastSearch.term && lastSearch.type === "nome") {
     return;
   }
 
-  setLastSearch(termoFormatado);
+  setLastSearch({
+    type: "nome",
+    term: termoFormatado
+  });
 
   if (!termoFormatado) {
     setSearchResults(null);
@@ -55,6 +66,48 @@ export default function useAlunos() {
       setNotification({
         open: true,
         message: "Erro ao realizar a busca por nome.",
+        severity: "error",
+      });
+    }
+  } finally {
+    setSearchLoading(false);
+  }
+}
+
+async function searchByEmail(email: string) {
+  const termoFormatado = email.trim();
+
+  if (termoFormatado === lastSearch.term && lastSearch.type === "email") {
+    return;
+  }
+
+  setLastSearch({
+    type: "email",
+    term: termoFormatado
+  });
+
+  if (!termoFormatado) {
+    setSearchResults(null);
+    return;
+  }
+
+  setSearchLoading(true);
+  try {
+    const resultados = await AlunoService.findByEmail(termoFormatado);
+    const listaDeResultados = Array.isArray(resultados) ? resultados : [resultados];
+    setSearchResults(listaDeResultados);
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      setSearchResults([]); 
+      setNotification({
+        open: true,
+        message: "Nenhum aluno encontrado com esse email.",
+        severity: "error",
+      });
+    } else {
+      setNotification({
+        open: true,
+        message: "Erro ao realizar a busca por email.",
         severity: "error",
       });
     }
@@ -154,6 +207,7 @@ export default function useAlunos() {
     loading: crud.loading || searchLoading,
     isSearching: searchResults !== null,
     searchByNome,
+    searchByEmail,
     create,
     update,
     remove,

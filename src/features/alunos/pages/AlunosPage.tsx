@@ -23,6 +23,7 @@ export default function AlunosPage() {
     setPage,
     isSearching,
     searchByNome,
+    searchByEmail,
     create,
     update, 
     desativar,
@@ -36,6 +37,9 @@ export default function AlunosPage() {
   
   const [selectedAluno, setSelectedAluno] = useState<Aluno | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilterType>("todos");
+
+  const [searchType, setSearchType] = useState<"nome" | "email">("nome");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -94,43 +98,85 @@ export default function AlunosPage() {
     }
   };
 
-  const filteredAlunos = data?.content.filter((aluno) => {
-    if (statusFilter === "todos") return true;
-    
-    const isAtivo = aluno.usuario?.ativo ?? false;
-    return statusFilter === "ativos" ? isAtivo : !isAtivo;
-  }) ?? [];
+  const handleSearch = (texto: string) => {
+    setSearchQuery(texto);
+    if (searchType === "nome") {
+      searchByNome(texto);
+    } else {
+      searchByEmail?.(texto); 
+    }
+  };
+  const handleSearchTypeChange = (novoTipo: "nome" | "email") => {
+    setSearchType(novoTipo);
+    if (searchQuery.trim()) {
+      if (novoTipo === "nome") {
+        searchByNome(searchQuery);
+      } else {
+        searchByEmail?.(searchQuery);
+      }
+    }
+  };
+
+  const filteredAlunos = (data && Array.isArray(data.content))
+  ? data.content.filter((aluno) => {
+      if (statusFilter === "todos") return true;
+
+      const isAtivo = aluno.usuario?.ativo ?? false;
+      return statusFilter === "ativos" ? isAtivo : !isAtivo;
+    })
+  : [];
 
   return (
     <>
       <CrudPage
         toolbar={
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
-            <Box sx={{ flexGrow: 1, width: "100%" }}>
-              <CrudToolbar
-                title="Alunos"
-                subtitle="Gerenciamento de alunos"
-                searchPlaceholder="Pesquisar por nome"
-                createLabel="Novo Aluno"
-                onCreate={handleCreateOpen} 
-                onSearch={(texto) => searchByNome(texto)}
-              />
-            </Box>
-            <Box sx={{ display: "flex", justifyContent: "flex-start", width: "100%", mt: -1 }}>
-              <FormControl size="small" sx={{ minWidth: 200 }}>
-                <InputLabel id="status-filter-label">Status do Usuário</InputLabel>
-                <Select
-                  labelId="status-filter-label"
-                  value={statusFilter}
-                  label="Status do Usuário"
-                  onChange={(e) => setStatusFilter(e.target.value as StatusFilterType)}
-                >
-                  <MenuItem value="todos">Todos</MenuItem>
-                  <MenuItem value="ativos">Ativos</MenuItem>
-                  <MenuItem value="inativos">Inativos</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
+          <Box sx={{ flexGrow: 1, width: "100%" }}>
+            <CrudToolbar
+              title="Alunos"
+              subtitle="Gerenciamento de alunos"
+              searchPlaceholder={`Pesquisar por ${searchType}`}
+              createLabel="Novo Aluno"
+              onCreate={handleCreateOpen} 
+              onSearch={handleSearch}
+            />
+          </Box>
+          
+          <Box sx={{ 
+            display: "flex", 
+            flexDirection: "row", 
+            gap: 2,             
+            width: "100%", 
+            mt: -1,
+            flexWrap: "wrap"      
+          }}>
+            <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+              <InputLabel id="search-type-label">Buscar por</InputLabel>
+              <Select
+                labelId="search-type-label"
+                value={searchType}
+                label="Buscar por"
+                onChange={(e) => handleSearchTypeChange(e.target.value as "nome" | "email")}
+              >
+                <MenuItem value="nome">Nome</MenuItem>
+                <MenuItem value="email">E-mail</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+              <InputLabel id="status-filter-label">Status do Usuário</InputLabel>
+              <Select
+                labelId="status-filter-label"
+                value={statusFilter}
+                label="Status do Usuário"
+                onChange={(e) => setStatusFilter(e.target.value as StatusFilterType)}
+              >
+                <MenuItem value="todos">Todos</MenuItem>
+                <MenuItem value="ativos">Ativos</MenuItem>
+                <MenuItem value="inativos">Inativos</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           </Box>
         }
         table={

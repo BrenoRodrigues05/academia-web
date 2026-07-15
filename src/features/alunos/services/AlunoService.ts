@@ -18,6 +18,13 @@ extends BaseCrudService<Aluno> {
         });
         return response.data;
     }
+
+    async findByEmail(email: string): Promise<Aluno[]> {
+        const response = await api.get<Aluno[]>(`${this.endpoint}/busca-email`, {
+            params: { email }
+        });
+        return response.data;
+    }
 }
 
 export default new AlunoService();
