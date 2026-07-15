@@ -18,6 +18,8 @@ type SexoFilterType = "todos" | Sexo;
 
 type StatusFilterType = "todos" | "ativos" | "inativos";
 
+type IdadeFilterType = "todos" | "menor_18" | "18_25" | "26_40" | "mais_40";
+
 export default function AlunosPage() {
   const {
     data,
@@ -49,6 +51,24 @@ export default function AlunosPage() {
   const [alunoTarget, setAlunoTarget] = useState<Aluno | null>(null);
 
   const [sexoFilter, setSexoFilter] = useState<SexoFilterType>("todos");
+
+  const [idadeFilter, setIdadeFilter] = useState<IdadeFilterType>("todos");
+
+  const calcularIdade = (dataNascimentoString: string | undefined): number => {
+  if (!dataNascimentoString) return 0;
+  
+  const hoje = new Date();
+  const nascimento = new Date(dataNascimentoString);
+  
+  let idade = hoje.getFullYear() - nascimento.getFullYear();
+  const mes = hoje.getMonth() - nascimento.getMonth();
+  
+  if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+    idade--;
+  }
+  
+  return idade;
+};
 
 
   const handleCreateOpen = () => {
@@ -128,11 +148,20 @@ export default function AlunosPage() {
       const passaStatus = statusFilter === "todos" 
         ? true 
         : (aluno.usuario?.ativo ?? false) === (statusFilter === "ativos");
+      
       const passaSexo = sexoFilter === "todos" 
         ? true 
         : aluno.sexo === sexoFilter;
 
-      return passaStatus && passaSexo;
+      const idade = calcularIdade(aluno.dataNascimento);
+      
+      let passaIdade = true;
+      if (idadeFilter === "menor_18") passaIdade = idade < 18;
+      else if (idadeFilter === "18_25") passaIdade = idade >= 18 && idade <= 25;
+      else if (idadeFilter === "26_40") passaIdade = idade >= 26 && idade <= 40;
+      else if (idadeFilter === "mais_40") passaIdade = idade > 40;
+
+      return passaStatus && passaSexo && passaIdade;
     })
   : [];
 
@@ -198,6 +227,22 @@ export default function AlunosPage() {
                 <MenuItem value={Sexo.FEMININO}>Feminino</MenuItem>
               </Select>
             </FormControl>
+
+            <FormControl size="small" sx={{ minWidth: 150, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+                <InputLabel id="idade-filter-label">Idade</InputLabel>
+                <Select
+                  labelId="idade-filter-label"
+                  value={idadeFilter}
+                  label="Idade"
+                  onChange={(e) => setIdadeFilter(e.target.value as IdadeFilterType)}
+                >
+                  <MenuItem value="todos">Todas as idades</MenuItem>
+                  <MenuItem value="menor_18">Menores de 18 anos</MenuItem>
+                  <MenuItem value="18_25">18 a 25 anos</MenuItem>
+                  <MenuItem value="26_40">26 a 40 anos</MenuItem>
+                  <MenuItem value="mais_40">Mais de 40 anos</MenuItem>
+                </Select>
+              </FormControl>
           </Box>
           </Box>
         }
