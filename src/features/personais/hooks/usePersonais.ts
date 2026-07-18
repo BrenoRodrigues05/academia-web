@@ -3,12 +3,7 @@ import { useState } from "react";
 import PersonalService from "../api/PersonalService";
 import type { Personal } from "../types/Personal"; 
 import { AxiosError } from "axios";
-
-export type NotificationState = {
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-};
+import useNotification from "@/hooks/useNotification"; 
 
 type LastSearchState = {
     type: "nome" | "email" | "cref" | null;
@@ -17,11 +12,7 @@ type LastSearchState = {
 
 export default function usePersonais() {
     const crud = useCrud(PersonalService);
-    const [notification, setNotification] = useState<NotificationState>({
-        open: false,
-        message: "",
-        severity: "success",
-    });
+    const { notification, showSuccess, showError, closeNotification } = useNotification();
 
     const [searchResults, setSearchResults] = useState<Personal[] | null>(null);
     const [searchLoading, setSearchLoading] = useState(false);
@@ -29,10 +20,6 @@ export default function usePersonais() {
         type: null,
         term: "",
     });
-
-    const closeNotification = () => {
-        setNotification((prev) => ({ ...prev, open: false }));
-    };
 
     async function searchByNome(nome: string) {
         const termoFormatado = nome.trim();
@@ -59,17 +46,9 @@ export default function usePersonais() {
             const axiosError = error as AxiosError;
             if (axiosError.response?.status === 404) {
                 setSearchResults([]); 
-                setNotification({
-                    open: true,
-                    message: "Nenhum personal encontrado com esse nome.",
-                    severity: "error",
-                });
+                showError("Nenhum personal encontrado com esse nome.");
             } else {
-                setNotification({
-                    open: true,
-                    message: "Erro ao realizar a busca por nome.",
-                    severity: "error",
-                });
+                showError("Erro ao realizar a busca por nome.");
             }
         } finally {
             setSearchLoading(false);
@@ -102,17 +81,9 @@ export default function usePersonais() {
             const axiosError = error as AxiosError;
             if (axiosError.response?.status === 404) {
                 setSearchResults([]); 
-                setNotification({
-                    open: true,
-                    message: "Nenhum personal encontrado com esse email.",
-                    severity: "error",
-                });
+                showError("Nenhum personal encontrado com esse email.");
             } else {
-                setNotification({
-                    open: true,
-                    message: "Erro ao realizar a busca por email.",
-                    severity: "error",
-                });
+                showError("Erro ao realizar a busca por email.");
             }
         } finally {
             setSearchLoading(false);
@@ -145,17 +116,9 @@ export default function usePersonais() {
             const axiosError = error as AxiosError;
             if (axiosError.response?.status === 404) {
                 setSearchResults([]); 
-                setNotification({
-                    open: true,
-                    message: "Nenhum personal encontrado com esse CREF.",
-                    severity: "error",
-                });
+                showError("Nenhum personal encontrado com esse CREF.");
             } else {
-                setNotification({
-                    open: true,
-                    message: "Erro ao realizar a busca por CREF.",
-                    severity: "error",
-                });
+                showError("Erro ao realizar a busca por CREF.");
             }
         } finally {
             setSearchLoading(false);
@@ -165,19 +128,11 @@ export default function usePersonais() {
     async function create(data: unknown) {
         try {
             await PersonalService.create(data);
-            setNotification({
-                open: true,
-                message: "Personal cadastrado com sucesso!",
-                severity: "success",
-            });
+            showSuccess("Personal cadastrado com sucesso!");
             setSearchResults(null);
             await crud.reload();
         } catch (error) {
-            setNotification({
-                open: true,
-                message: "Erro ao cadastrar personal. Tente novamente.",
-                severity: "error",
-            });
+            showError("Erro ao cadastrar personal. Tente novamente.");
             throw error; 
         }
     }
@@ -185,19 +140,11 @@ export default function usePersonais() {
     async function update(id: number, data: unknown) {
         try {
             await PersonalService.update(id, data);
-            setNotification({
-                open: true,
-                message: "Personal atualizado com sucesso!",
-                severity: "success",
-            });
+            showSuccess("Personal atualizado com sucesso!");
             setSearchResults(null);
             await crud.reload();
         } catch (error) {
-            setNotification({
-                open: true,
-                message: "Erro ao atualizar personal.",
-                severity: "error",
-            });
+            showError("Erro ao atualizar personal.");
             throw error;
         }
     }
@@ -210,38 +157,20 @@ export default function usePersonais() {
             const novoStatus = !statusAtual;
 
             await PersonalService.desativar(personal.id, novoStatus);
-
-            setNotification({
-                open: true,
-                message: `Personal ${novoStatus ? "ativado" : "desativado"} com sucesso!`,
-                severity: "success",
-            });
+            showSuccess(`Personal ${novoStatus ? "ativado" : "desativado"} com sucesso!`);
             await crud.reload();
-
         } catch (error) {
-            setNotification({
-                open: true,
-                message: "Erro ao alterar o status do personal.",
-                severity: "error",
-            });
+            showError("Erro ao alterar o status do personal.");
         }
     }
 
     async function remove(id: number) {
         try {
             await PersonalService.delete(id);
-            setNotification({
-                open: true,
-                message: "Personal removido com sucesso!",
-                severity: "success",
-            });
+            showSuccess("Personal removido com sucesso!");
             await crud.reload();
         } catch (error) {
-            setNotification({
-                open: true,
-                message: "Erro ao remover personal.",
-                severity: "error",
-            });
+            showError("Erro ao remover personal.");
         }
     }
 
@@ -259,7 +188,7 @@ export default function usePersonais() {
         update,
         remove,
         desativar,
-        notification,
-        closeNotification,
+        notification,       
+        closeNotification,  
     };
 }

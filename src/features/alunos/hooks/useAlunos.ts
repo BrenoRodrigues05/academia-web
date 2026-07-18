@@ -3,12 +3,7 @@ import { useState } from "react";
 import AlunoService from "../services/AlunoService";
 import type { Aluno } from "../types/Aluno";
 import { AxiosError } from "axios";
-
-export type NotificationState = {
-  open: boolean;
-  message: string;
-  severity: "success" | "error";
-};
+import useNotification from "@/hooks/useNotification";
 
 type LastSearchState = {
   type: "nome" | "email" | null;
@@ -17,12 +12,6 @@ type LastSearchState = {
 
 export default function useAlunos() {
   const crud = useCrud(AlunoService);
-  const [notification, setNotification] = useState<NotificationState>({
-    open: false,
-    message: "",
-    severity: "success",
-  });
-
   const [searchResults, setSearchResults] = useState<Aluno[] | null>(null);
   const [searchLoading, setSearchLoading] = useState(false);
   const [lastSearch, setLastSearch] = useState<LastSearchState>({
@@ -30,9 +19,7 @@ export default function useAlunos() {
     term: "",
   });
 
-  const closeNotification = () => {
-    setNotification((prev) => ({ ...prev, open: false }));
-  };
+  const { notification, showSuccess, showError, closeNotification } = useNotification();
 
   async function searchByNome(nome: string) {
   const termoFormatado = nome.trim();
@@ -57,20 +44,12 @@ export default function useAlunos() {
     setSearchResults(resultados);
   } catch (error) {
     const axiosError = error as AxiosError;
-    if (axiosError.status === 404) {
-      setSearchResults([]); 
-      setNotification({
-        open: true,
-        message: "Nenhum aluno encontrado com esse nome.",
-        severity: "error",
-      });
-    } else {
-      setNotification({
-        open: true,
-        message: "Erro ao realizar a busca por nome.",
-        severity: "error",
-      });
-    }
+      if (axiosError.response?.status === 404) {
+        setSearchResults([]); 
+        showError("Nenhum aluno encontrado com esse nome.");
+      } else {
+        showError("Erro ao realizar a busca por nome.");
+      }
   } finally {
     setSearchLoading(false);
   }
@@ -101,19 +80,11 @@ async function searchByEmail(email: string) {
   } catch (error) {
     const axiosError = error as AxiosError;
     if (axiosError.response?.status === 404) {
-      setSearchResults([]); 
-      setNotification({
-        open: true,
-        message: "Nenhum aluno encontrado com esse email.",
-        severity: "error",
-      });
-    } else {
-      setNotification({
-        open: true,
-        message: "Erro ao realizar a busca por email.",
-        severity: "error",
-      });
-    }
+        setSearchResults([]); 
+        showError("Nenhum aluno encontrado com esse email.");
+      } else {
+        showError("Erro ao realizar a busca por email.");
+      }
   } finally {
     setSearchLoading(false);
   }
@@ -122,19 +93,19 @@ async function searchByEmail(email: string) {
   async function create(data: unknown) {
     try {
       await AlunoService.create(data);
-      setNotification({
-        open: true,
-        message: "Aluno cadastrado com sucesso!",
-        severity: "success",
-      });
+      showSuccess(
+
+      "Aluno cadastrado."
+
+      );
       setSearchResults(null);
       await crud.reload();
     } catch (error) {
-      setNotification({
-        open: true,
-        message: "Erro ao cadastrar aluno. Tente novamente.",
-        severity: "error",
-      });
+      showError(
+
+      "Erro ao cadastrar aluno."
+
+      );
       throw error; 
     }
   }
@@ -142,19 +113,19 @@ async function searchByEmail(email: string) {
   async function update(id: number, data: unknown) {
     try {
       await AlunoService.update(id, data);
-      setNotification({
-        open: true,
-        message: "Aluno atualizado com sucesso!",
-        severity: "success",
-      });
+      showSuccess(
+
+      "Aluno atualizado."
+
+      );
       setSearchResults(null);
       await crud.reload();
     } catch (error) {
-      setNotification({
-        open: true,
-        message: "Erro ao atualizar aluno.",
-        severity: "error",
-      });
+      showError(
+
+      "Erro ao atualizar aluno."
+
+      );
       throw error;
     }
   }
@@ -168,37 +139,31 @@ async function searchByEmail(email: string) {
 
     await AlunoService.desativar(aluno.id, novoStatus);
 
-    setNotification({
-      open: true,
-      message: `Aluno ${novoStatus ? "ativado" : "desativado"} com sucesso!`,
-      severity: "success",
-    });
+    showSuccess(
+      `Aluno ${novoStatus ? "ativado" : "desativado"} com sucesso!`,
+      );
     await crud.reload();
 
   } catch (error) {
-    setNotification({
-      open: true,
-      message: "Erro ao alterar o status do aluno.",
-      severity: "error",
-    });
+    showError(
+      "Erro ao alterar o status do aluno."
+    );
   }
 }
 
   async function remove(id: number) {
     try {
       await AlunoService.delete(id);
-      setNotification({
-        open: true,
-        message: "Aluno removido com sucesso!",
-        severity: "success",
-      });
+      showSuccess(
+
+      "Aluno removido com sucesso."
+
+      );
       await crud.reload();
     } catch (error) {
-      setNotification({
-        open: true,
-        message: "Erro ao remover aluno.",
-        severity: "error",
-      });
+      showError(
+      "Erro ao remover aluno."
+      );
     }
   }
 
