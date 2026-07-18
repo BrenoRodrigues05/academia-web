@@ -6,6 +6,7 @@ import NotFoundPage from "../pages/not-found/NotFoundPage";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import AlunosPage from "@/features/alunos/pages/AlunosPage";
+import PersonaisPage from "@/features/personais/pages/PersonaisPage";
 
 export default function AppRoutes() {
   return (
@@ -25,7 +26,11 @@ export default function AppRoutes() {
 />
         <Route path="/alunos" element={<AlunosPage />} />
         <Route path="*" element={<NotFoundPage />} />
+
+      <Route path="/personais" element={<PersonaisPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
+    
   );
 }
