@@ -95,7 +95,7 @@ async function searchByEmail(email: string) {
       await AlunoService.create(data);
       showSuccess(
 
-      "Aluno cadastrado."
+      "Aluno cadastrado com sucesso! A senha padrão é Aluno@123. Não esqueça de comunicar ao usuário."
 
       );
       setSearchResults(null);
