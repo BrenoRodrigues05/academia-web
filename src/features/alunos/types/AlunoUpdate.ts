@@ -1,3 +1,5 @@
+import { Sexo } from "@/shared/enums/Sexo";
+
 export interface AlunoUpdate {
 
     nome: string;
@@ -8,7 +10,7 @@ export interface AlunoUpdate {
 
     dataNascimento: string;
 
-    sexo: string;
+    sexo: Sexo;
 
     usuario?: {
 
