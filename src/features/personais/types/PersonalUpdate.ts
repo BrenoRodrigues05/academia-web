@@ -18,4 +18,12 @@ export interface PersonalUpdate {
 
     sexo: Sexo;
 
+    ativo: boolean;
+
+    usuario?: {
+
+        id: number;
+        ativo: boolean;
+    }
+
 }

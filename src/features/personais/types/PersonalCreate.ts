@@ -16,6 +16,7 @@ export interface PersonalCreate {
 
     especialidade: string;
 
-    sexo: Sexo;
+    ativo: boolean;
 
+    sexo: Sexo;
 }

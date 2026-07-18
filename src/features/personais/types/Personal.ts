@@ -23,5 +23,6 @@ export interface Personal {
     usuario?: {
 
         id: number;
+        ativo: boolean;
     }
 }
