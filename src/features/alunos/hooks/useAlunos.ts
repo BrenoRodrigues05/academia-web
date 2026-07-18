@@ -2,6 +2,7 @@ import { useCrud } from "@/api/hooks/useCrud";
 import { useState } from "react";
 import AlunoService from "../services/AlunoService";
 import type { Aluno } from "../types/Aluno";
+import { AxiosError } from "axios";
 
 export type NotificationState = {
   open: boolean;
@@ -54,8 +55,9 @@ export default function useAlunos() {
   try {
     const resultados = await AlunoService.findByNome(termoFormatado);
     setSearchResults(resultados);
-  } catch (error: any) {
-    if (error.response?.status === 404) {
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    if (axiosError.status === 404) {
       setSearchResults([]); 
       setNotification({
         open: true,
@@ -96,8 +98,9 @@ async function searchByEmail(email: string) {
     const resultados = await AlunoService.findByEmail(termoFormatado);
     const listaDeResultados = Array.isArray(resultados) ? resultados : [resultados];
     setSearchResults(listaDeResultados);
-  } catch (error: any) {
-    if (error.response?.status === 404) {
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    if (axiosError.response?.status === 404) {
       setSearchResults([]); 
       setNotification({
         open: true,

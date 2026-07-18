@@ -1,7 +1,8 @@
 import { useCrud } from "@/api/hooks/useCrud";
 import { useState } from "react";
-import PersonalService from "@/features/personais/api";
+import PersonalService from "../api/PersonalService";
 import type { Personal } from "../types/Personal"; 
+import { AxiosError } from "axios";
 
 export type NotificationState = {
     open: boolean;
@@ -54,8 +55,9 @@ export default function usePersonais() {
         try {
             const resultados = await PersonalService.findByNome(termoFormatado);
             setSearchResults(resultados);
-        } catch (error: any) {
-            if (error.response?.status === 404) {
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            if (axiosError.response?.status === 404) {
                 setSearchResults([]); 
                 setNotification({
                     open: true,
@@ -96,8 +98,9 @@ export default function usePersonais() {
             const resultados = await PersonalService.findByEmail(termoFormatado);
             const listaDeResultados = Array.isArray(resultados) ? resultados : [resultados];
             setSearchResults(listaDeResultados);
-        } catch (error: any) {
-            if (error.response?.status === 404) {
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            if (axiosError.response?.status === 404) {
                 setSearchResults([]); 
                 setNotification({
                     open: true,
@@ -138,8 +141,9 @@ export default function usePersonais() {
             const resultados = await PersonalService.findByCref(termoFormatado);
             const listaDeResultados = Array.isArray(resultados) ? resultados : [resultados];
             setSearchResults(listaDeResultados);
-        } catch (error: any) {
-            if (error.response?.status === 404) {
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            if (axiosError.response?.status === 404) {
                 setSearchResults([]); 
                 setNotification({
                     open: true,
