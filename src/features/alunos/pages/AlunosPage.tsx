@@ -6,6 +6,15 @@ import {
   AppPagination,
   AppLoading,
 } from "@/components/ui";
+import {
+
+LoadingOverlay,
+
+EmptyState,
+
+ErrorState,
+
+} from "@/components/feedback";
 import { AlunoDialog, AlunoTable} from "../components";
 import CrudToolbar from "@/components/crud/CrudToolbar";
 import useAlunos from "../hooks/useAlunos";
@@ -164,70 +173,99 @@ export default function AlunosPage() {
     })
   : [];
 
+  const renderTableContent = () => {
+    if (loading) {
+      return <AppLoading />;
+    }
+    if (!data) {
+      return (
+        <ErrorState 
+          message="Não foi possível carregar a lista de alunos. Verifique sua conexão." 
+          onRetry={() => handleSearch(searchQuery)} 
+        />
+      );
+    }
+
+    if (filteredAlunos.length === 0) {
+      return <EmptyState message="Nenhum aluno encontrado para os filtros selecionados." />;
+    }
+
+    return (
+      <AlunoTable 
+        alunos={filteredAlunos} 
+        onEdit={handleEditOpen} 
+        onDelete={handleDeleteClick}
+        onDeactivate={handleDeactivateClick} 
+      />
+    );
+  };
+
   return (
     <>
+      <LoadingOverlay open={submitting} />
+
       <CrudPage
         toolbar={
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
-          <Box sx={{ flexGrow: 1, width: "100%" }}>
-            <CrudToolbar
-              title="Alunos"
-              subtitle="Gerenciamento de alunos"
-              searchPlaceholder={`Pesquisar por ${searchType}`}
-              createLabel="Novo Aluno"
-              onCreate={handleCreateOpen} 
-              onSearch={handleSearch}
-            />
-          </Box>
-          
-          <Box sx={{ 
-            display: "flex", 
-            flexDirection: "row", 
-            gap: 2,             
-            width: "100%", 
-            mt: -1,
-            flexWrap: "wrap"      
-          }}>
-            <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
-              <InputLabel id="search-type-label">Buscar por</InputLabel>
-              <Select
-                labelId="search-type-label"
-                value={searchType}
-                label="Buscar por"
-                onChange={(e) => handleSearchTypeChange(e.target.value as "nome" | "email")}
-              >
-                <MenuItem value="nome">Nome</MenuItem>
-                <MenuItem value="email">E-mail</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
-              <InputLabel id="status-filter-label">Status do Usuário</InputLabel>
-              <Select
-                labelId="status-filter-label"
-                value={statusFilter}
-                label="Status do Usuário"
-                onChange={(e) => setStatusFilter(e.target.value as StatusFilterType)}
-              >
-                <MenuItem value="todos">Todos</MenuItem>
-                <MenuItem value="ativos">Ativos</MenuItem>
-                <MenuItem value="inativos">Inativos</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl size="small" sx={{ minWidth: 160, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
-              <InputLabel id="sexo-filter-label">Gênero</InputLabel>
-              <Select
-                labelId="sexo-filter-label"
-                value={sexoFilter}
-                label="Gênero"
-                onChange={(e) => setSexoFilter(e.target.value as SexoFilterType)}
-              >
-                <MenuItem value="todos">Todos os gêneros</MenuItem>
-                <MenuItem value={Sexo.MASCULINO}>Masculino</MenuItem>
-                <MenuItem value={Sexo.FEMININO}>Feminino</MenuItem>
-              </Select>
-            </FormControl>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
+            <Box sx={{ flexGrow: 1, width: "100%" }}>
+              <CrudToolbar
+                title="Alunos"
+                subtitle="Gerenciamento de alunos"
+                searchPlaceholder={`Pesquisar por ${searchType}`}
+                createLabel="Novo Aluno"
+                onCreate={handleCreateOpen} 
+                onSearch={handleSearch}
+              />
+            </Box>
+            
+            <Box sx={{ 
+              display: "flex", 
+              flexDirection: "row", 
+              gap: 2,             
+              width: "100%", 
+              mt: -1,
+              flexWrap: "wrap"      
+            }}>
+              <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+                <InputLabel id="search-type-label">Buscar por</InputLabel>
+                <Select
+                  labelId="search-type-label"
+                  value={searchType}
+                  label="Buscar por"
+                  onChange={(e) => handleSearchTypeChange(e.target.value as "nome" | "email")}
+                >
+                  <MenuItem value="nome">Nome</MenuItem>
+                  <MenuItem value="email">E-mail</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+                <InputLabel id="status-filter-label">Status do Usuário</InputLabel>
+                <Select
+                  labelId="status-filter-label"
+                  value={statusFilter}
+                  label="Status do Usuário"
+                  onChange={(e) => setStatusFilter(e.target.value as StatusFilterType)}
+                >
+                  <MenuItem value="todos">Todos</MenuItem>
+                  <MenuItem value="ativos">Ativos</MenuItem>
+                  <MenuItem value="inativos">Inativos</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl size="small" sx={{ minWidth: 160, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+                <InputLabel id="sexo-filter-label">Gênero</InputLabel>
+                <Select
+                  labelId="sexo-filter-label"
+                  value={sexoFilter}
+                  label="Gênero"
+                  onChange={(e) => setSexoFilter(e.target.value as SexoFilterType)}
+                >
+                  <MenuItem value="todos">Todos os gêneros</MenuItem>
+                  <MenuItem value={Sexo.MASCULINO}>Masculino</MenuItem>
+                  <MenuItem value={Sexo.FEMININO}>Feminino</MenuItem>
+                </Select>
+              </FormControl>
 
-            <FormControl size="small" sx={{ minWidth: 150, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+              <FormControl size="small" sx={{ minWidth: 150, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
                 <InputLabel id="idade-filter-label">Idade</InputLabel>
                 <Select
                   labelId="idade-filter-label"
@@ -242,23 +280,12 @@ export default function AlunosPage() {
                   <MenuItem value="mais_40">Mais de 40 anos</MenuItem>
                 </Select>
               </FormControl>
-          </Box>
+            </Box>
           </Box>
         }
-        table={
-          loading ? (
-            <AppLoading />
-          ) : data ? (
-            <AlunoTable 
-              alunos={filteredAlunos} 
-              onEdit={handleEditOpen} 
-              onDelete={handleDeleteClick}
-              onDeactivate={handleDeactivateClick} 
-            />
-          ) : null
-        }
+        table={renderTableContent()}
         pagination={
-          !loading && data && !isSearching ? (
+          !loading && data && !isSearching && filteredAlunos.length > 0 ? (
             <AppPagination
               page={page}
               totalPages={data.totalPages}
