@@ -128,7 +128,7 @@ export default function usePersonais() {
     async function create(data: unknown) {
         try {
             await PersonalService.create(data);
-            showSuccess("Personal cadastrado com sucesso!");
+            showSuccess("Personal cadastrado com sucesso! A senha padrão é Mudar@123. Não esqueça de comunicar ao usuário.");
             setSearchResults(null);
             await crud.reload();
         } catch (error) {
