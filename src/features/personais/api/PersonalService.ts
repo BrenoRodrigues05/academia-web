@@ -1,16 +1,18 @@
 import BaseCrudService from "@/api/BaseCrudService";
-
 import type { Personal } from "../types/Personal";
 import api from "@/api/axios";
 
-class PersonalService
-extends BaseCrudService<Personal>{
+class PersonalService extends BaseCrudService<Personal> {
 
     constructor(){
-
         super("/personais");
     }
 
+    async create(data: unknown): Promise<Personal> {
+        const response = await api.post<Personal>(this.endpoint, data);
+        return response.data;
+    }
+    
     async findByNome(nome : string) : Promise<Personal[]>{
         const response = await api.get<Personal[]>(`${this.endpoint}/busca-nome`,{
             params: {nome}
@@ -44,6 +46,12 @@ extends BaseCrudService<Personal>{
             params: {ativo}
         });
         return response.data;
+    }
+
+    async desativar(id: number, novoStatus: boolean): Promise<void> {
+        await api.patch<Personal>(`${this.endpoint}/${id}/ativo`, null, {
+            params: { ativo: novoStatus } 
+        });
     }
 }
 
