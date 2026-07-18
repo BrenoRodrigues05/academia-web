@@ -1,8 +1,8 @@
 # 🏋️ Academia Web
 
-Frontend da Academia API desenvolvido com React, TypeScript e Material UI.
+Frontend da **Academia API**, desenvolvido com **React**, **TypeScript** e **Material UI**, seguindo uma arquitetura escalável baseada em **Feature-First**, com componentes reutilizáveis, hooks customizados e foco em responsividade.
 
-O projeto segue boas práticas de desenvolvimento, utilizando arquitetura baseada em features, React Router para navegação, Material UI para a interface, ESLint e Prettier para padronização do código e integração com a Academia API para autenticação e gerenciamento da academia.
+O objetivo do projeto é fornecer uma interface moderna para gerenciamento de academias, permitindo administrar alunos, planos, matrículas, personais, treinos e exercícios de forma organizada e intuitiva.
 
 ---
 
@@ -13,12 +13,12 @@ O projeto segue boas práticas de desenvolvimento, utilizando arquitetura basead
 - React 19
 - TypeScript
 - Vite
-- React Router DOM
 - Material UI (MUI)
-- Emotion
-- ESLint
-- Prettier
-- npm
+- React Router DOM
+- Axios
+- React Hook Form
+- Zod
+- React Context API
 
 ---
 
@@ -28,38 +28,47 @@ O projeto segue boas práticas de desenvolvimento, utilizando arquitetura basead
 src
 │
 ├── api
+│   ├── axios.ts
+│   ├── interceptors.ts
+│   └── index.ts
+│
 ├── assets
 │
 ├── components
 │   ├── common
-│   ├── forms
-│   ├── layout
-│   └── ui
+│   ├── crud
+│   ├── feedback
+│   ├── form
+│   └── layout
 │
 ├── features
-│   ├── auth
-│   ├── alunos
-│   ├── personais
-│   ├── planos
-│   ├── matriculas
-│   ├── treinos
-│   └── exercicios
+│   └── alunos
+│       ├── api
+│       ├── components
+│       ├── hooks
+│       ├── mappers
+│       ├── pages
+│       ├── schemas
+│       ├── types
+│       └── index.ts
 │
 ├── hooks
 │
 ├── layouts
 │
-├── pages
-│   ├── auth
-│   ├── dashboard
-│   └── not-found
+├── providers
 │
 ├── routes
-├── services
-├── store
+│
+├── shared
+│   ├── constants
+│   ├── enums
+│   ├── helpers
+│   ├── types
+│   ├── utils
+│   └── validators
+│
 ├── styles
-├── types
-├── utils
 │
 ├── App.tsx
 └── main.tsx
@@ -69,87 +78,152 @@ src
 
 # 🏛️ Arquitetura
 
-A aplicação segue uma arquitetura baseada em componentes reutilizáveis e organização por funcionalidades (Feature-Based Architecture).
+A aplicação segue uma arquitetura **Feature-First**, onde cada módulo concentra tudo o que é necessário para funcionar.
 
 ```text
-Pages
-    ↓
-Layouts
-    ↓
-Components
-    ↓
-Services
-    ↓
-Academia API
+Feature
+
+↓
+
+API
+
+↓
+
+Hooks
+
+↓
+
+Componentes
+
+↓
+
+Página
+
+↓
+
+Rotas
 ```
 
----
-
-## Responsabilidades
-
-| Camada     | Responsabilidade                  |
-| ---------- | --------------------------------- |
-| Pages      | Representam as telas da aplicação |
-| Layouts    | Estrutura visual reutilizável     |
-| Components | Componentes reutilizáveis         |
-| Features   | Organização das funcionalidades   |
-| Services   | Comunicação com a API             |
-| Hooks      | Hooks customizados                |
-| Store      | Gerenciamento de estado global    |
-| Types      | Tipagens TypeScript               |
-| Utils      | Funções utilitárias               |
+Essa abordagem facilita a manutenção, reutilização de código e evolução do projeto.
 
 ---
 
-# 🎨 Interface
+# 📦 Componentes Reutilizáveis
 
-A interface utiliza Material UI como biblioteca de componentes.
+## CRUD
 
-Recursos já implementados:
+- CrudPage
+- CrudToolbar
+- CrudTable
+- CrudDialog
+- CrudActions
+- CrudResponsiveList
+- CrudCard
 
-- Tema Global
-- CSS Reset (CssBaseline)
-- Paleta de cores centralizada
-- Tipografia centralizada
-- Layout Base
-- Navbar
-- Sidebar
+## Formulários
 
----
+- AppTextField
+- AppSelectField
+- AppDateField
+- AppPhoneField
+- AppTextarea
 
-# 🛣️ Rotas
+## Feedback
 
-Atualmente o projeto possui as seguintes rotas:
-
-```text
-/
-└── Login
-
-/dashboard
-└── Dashboard
-
-*
-└── Página 404
-```
+- AppSnackbar
+- LoadingOverlay
+- EmptyState
+- ErrorState
+- ConfirmDialog
 
 ---
 
-# 📋 Estrutura de Layout
+# 📱 Responsividade
 
-```text
-┌────────────────────────────────────────────────────┐
-│ Navbar                                             │
-├────────────────────┬───────────────────────────────┤
-│                    │                               │
-│ Sidebar            │                               │
-│                    │                               │
-│                    │          Conteúdo             │
-│                    │                               │
-│                    │                               │
-└────────────────────┴───────────────────────────────┘
-```
+O projeto foi desenvolvido com foco em dispositivos móveis.
 
-Este layout será reutilizado em todas as páginas autenticadas da aplicação.
+### Desktop
+
+- Tabelas completas
+- Sidebar expandida
+- Layout otimizado para telas grandes
+
+### Mobile
+
+- Cards responsivos
+- Drawer lateral
+- Componentes adaptados para toque
+- Layout otimizado para telas pequenas
+
+---
+
+# 🔄 Comunicação com a API
+
+A comunicação é realizada utilizando **Axios**, com uma instância centralizada.
+
+Recursos implementados:
+
+- Base URL configurável por variável de ambiente
+- Interceptors para requisições e respostas
+- Tratamento centralizado de erros
+- Preparação para autenticação JWT
+
+---
+
+# 🔐 Autenticação
+
+Estrutura preparada para:
+
+- Login
+- JWT
+- Refresh Token
+- Rotas protegidas
+- Controle de permissões
+
+---
+
+# 📋 Funcionalidades Implementadas
+
+## Alunos
+
+- Listagem paginada
+- Cadastro
+- Edição
+- Exclusão
+- Busca
+- Validação de formulários
+- Feedback visual
+- Responsividade
+
+---
+
+# 🎯 Padrões Utilizados
+
+- Feature-First Architecture
+- Componentes reutilizáveis
+- Hooks customizados
+- Barrel Files
+- Context API
+- Providers centralizados
+- Layouts reutilizáveis
+- Responsividade Mobile First
+
+---
+
+# 🛣️ Roadmap
+
+## Em desenvolvimento
+
+- Personais
+- Planos
+- Matrículas
+- Exercícios
+- Treinos
+- Dashboard
+- Autenticação JWT
+- Controle de permissões
+- Tema Dark Mode
+- Testes automatizados
 
 ---
 
@@ -159,12 +233,6 @@ Este layout será reutilizado em todas as páginas autenticadas da aplicação.
 
 ```bash
 git clone https://github.com/BrenoRodrigues05/academia-web.git
-```
-
-## Entrar na pasta
-
-```bash
-cd academia-web
 ```
 
 ## Instalar dependências
@@ -179,69 +247,6 @@ npm install
 npm run dev
 ```
 
-A aplicação ficará disponível em:
-
-```text
-http://localhost:5173
-```
-
----
-
-# 🧪 Roadmap
-
-## Estrutura
-
-- ✅ React + TypeScript
-- ✅ Vite
-- ✅ React Router
-- ✅ Material UI
-- ✅ Tema Global
-- ✅ Layout Base
-- ✅ Navbar
-- ✅ Sidebar
-- ✅ ESLint
-- ✅ Prettier
-
-## Autenticação
-
-- ⬜ Login
-- ⬜ JWT
-- ⬜ Axios
-- ⬜ Interceptors
-- ⬜ Rotas Protegidas
-- ⬜ Persistência da Sessão
-
-## Dashboard
-
-- ⬜ Cards
-- ⬜ KPIs
-- ⬜ Gráficos
-
-## CRUDs
-
-- ⬜ Alunos
-- ⬜ Personais
-- ⬜ Planos
-- ⬜ Matrículas
-- ⬜ Treinos
-- ⬜ Exercícios
-- ⬜ Itens de Treino
-
-## Melhorias
-
-- ⬜ Dark Mode
-- ⬜ Responsividade
-- ⬜ TanStack Query
-- ⬜ Zustand
-- ⬜ React Hook Form
-- ⬜ Zod
-- ⬜ Paginação
-- ⬜ Busca
-- ⬜ Filtros
-- ⬜ Docker
-- ⬜ GitHub Actions
-- ⬜ Deploy
-
 ---
 
 # 👨‍💻 Autor
@@ -250,12 +255,12 @@ http://localhost:5173
 
 Desenvolvedor Full Stack
 
-GitHub:
+Portfólio:
 
-https://github.com/BrenoRodrigues05
+https://www.brenorodriguesdev.com.br/
 
 ---
 
 # ⭐ Projeto em evolução
 
-Este projeto está sendo desenvolvido juntamente com a **Academia API**, seguindo arquitetura moderna, boas práticas de desenvolvimento, componentes reutilizáveis, tipagem forte com TypeScript e padrões utilizados em aplicações React profissionais.
+Este projeto está sendo desenvolvido com foco em aprendizado contínuo, aplicação de boas práticas e construção de uma arquitetura moderna para aplicações React escaláveis.
