@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import {
   Box,
@@ -12,84 +12,51 @@ import {
 } from "@/components/ui";
 
 type Props = {
-
   title: string;
-
   subtitle: string;
-
-  searchPlaceholder: string;
-
-  onSearch: (value: string) => void;
-
+  searchPlaceholder?: string; 
+  onSearch?: (value: string) => void; 
   onCreate: () => void;
-
   createLabel?: string;
-
   actions?: ReactNode;
-
 };
 
 export default function CrudToolbar({
-
   title,
-
   subtitle,
-
   searchPlaceholder,
-
   onSearch,
-
   onCreate,
-
   createLabel = "Novo",
-
   actions,
-
 }: Props) {
-
   return (
-
     <Box mb={3}>
-
       <AppPageHeader
-
         title={title}
-
         subtitle={subtitle}
-
         action={
-
-          <AppButton
-            onClick={onCreate}
-          >
-
+          <AppButton onClick={onCreate}>
             {createLabel}
-
           </AppButton>
-
         }
-
       />
 
-      <Stack
-        mt={3}
-        spacing={2}
-      >
+      {(onSearch || actions) && (
+        <Stack
+          mt={3}
+          spacing={2}
+        >
+          {onSearch && (
+            <AppSearch
+              placeholder={searchPlaceholder}
+              onSearch={onSearch}
+            />
+          )}
 
-        <AppSearch
-
-          placeholder={searchPlaceholder}
-
-          onSearch={onSearch}
-
-        />
-
-        {actions}
-
-      </Stack>
-
+          {actions}
+        </Stack>
+      )}
     </Box>
-
   );
-
 }

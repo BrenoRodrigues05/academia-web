@@ -52,9 +52,9 @@ export default function PlanoTable({
             header: "Imagem",
             align: "center",
             render: (plano) =>
-                plano.imagemURL ? (
+                plano.imagemUrl ? (
                     <Avatar
-                        src={plano.imagemURL}
+                        src={plano.imagemUrl}
                         alt={plano.nome}
                         variant="rounded"
                         sx={{ width: 40, height: 40, margin: "0 auto" }}
