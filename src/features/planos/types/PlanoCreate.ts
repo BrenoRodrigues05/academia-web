@@ -5,5 +5,5 @@ export interface PlanoCreate {
     descricao: string;
     valor: number;
     TipoPlano : TipoPlano;
-    imagemURL : string;       
+    imagemUrl : string;       
 }
