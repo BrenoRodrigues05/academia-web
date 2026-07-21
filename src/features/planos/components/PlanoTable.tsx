@@ -39,7 +39,7 @@ export default function PlanoTable({
             align: "center",
             render: (plano) => (
                 <Chip
-                    label={plano.TipoPlano}
+                    label={plano.tipo}
                     size="small"
                     color="primary"
                     variant="outlined"

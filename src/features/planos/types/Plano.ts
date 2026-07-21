@@ -5,6 +5,6 @@ export interface Plano{
     nome: string;
     descricao: string;
     valor: number;
-    TipoPlano : TipoPlano;
+    tipo: TipoPlano;
     imagemURL : string;
 }
