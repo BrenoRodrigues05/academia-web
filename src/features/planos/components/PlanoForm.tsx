@@ -9,7 +9,7 @@ import { AppTextField, AppSelectField } from "@/components/forms";
 import type { PlanoSchema } from "../validation/planoSchema";
 
 type Props = {
-    defaultValues?: Partial<PlanoSchema>;
+    defaultValues?: Partial<PlanoSchema>& { id?: number };
     onSubmit: (data: PlanoSchema) => void;
 };
 
@@ -20,6 +20,7 @@ const planoOptions = [
 ];
 
 export default function PlanoForm({ defaultValues, onSubmit }: Props) {
+    const isEditing = Boolean(defaultValues?.id);
     const {
         control,
         handleSubmit,
@@ -96,6 +97,7 @@ export default function PlanoForm({ defaultValues, onSubmit }: Props) {
                                 {...field}
                                 label="Tipo"
                                 options={planoOptions}
+                                disabled={isEditing}
                                 error={!!errors.tipo}
                                 helperText={errors.tipo?.message}
                             />
