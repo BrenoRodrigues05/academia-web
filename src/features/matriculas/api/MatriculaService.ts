@@ -11,6 +11,19 @@ import type {Matricula} from "../types";
             super("/matriculas");
         }
 
+        async loadReferenceData() {
+
+        const [alunos, planos] =
+        await Promise.all([
+            AlunoService.findAll(),
+            PlanoService.findAll(),
+        ]);
+        return {
+            alunos: alunos.content,
+            planos: planos.content,
+        };
+}
+
     async getAlunos(){
     return AlunoService.findAll();
     }
