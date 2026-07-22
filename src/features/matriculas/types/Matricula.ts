@@ -3,7 +3,7 @@ import type {Plano} from "@/features/planos/types"
 
 export interface Matricula {
 
-    id: number;
+    matricula : number;
 
     ativa: boolean;
 

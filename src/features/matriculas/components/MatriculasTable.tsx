@@ -62,13 +62,13 @@ export default function MatriculasTable({
                     {matriculas.map((matricula) => (
 
                         <TableRow
-                            key={matricula.id}
+                            key={matricula.matricula}
                             hover
                         >
 
                             <TableCell>
 
-                                {matricula.id}
+                                {matricula.matricula}
 
                             </TableCell>
 
