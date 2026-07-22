@@ -9,6 +9,7 @@ import AlunosPage from "@/features/alunos/pages/AlunosPage";
 import PersonaisPage from "@/features/personais/pages/PersonaisPage";
 import PlanosPage from "@/features/planos/pages/PlanosPage";
 import MatriculasPage from "@/features/matriculas/pages/MatriculasPage";
+import ExerciciosPage from "@/features/exercicios/pages/ExerciciosPage";
 
 export default function AppRoutes() {
   return (
@@ -36,6 +37,9 @@ export default function AppRoutes() {
         <Route path="*" element={<NotFoundPage />} />
 
         <Route path="/matriculas" element={<MatriculasPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+
+        <Route path="/exercicios" element={<ExerciciosPage />} />
         <Route path="*" element={<NotFoundPage />} />
         </Routes>
     </BrowserRouter>
