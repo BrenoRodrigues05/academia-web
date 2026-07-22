@@ -1,5 +1,5 @@
-import { useCrud } from "@/api/hooks/useCrud";
 import { useState } from "react";
+import { useCrud } from "@/api/hooks/useCrud";
 
 import MatriculaService from "../api/MatriculaService";
 
@@ -7,15 +7,14 @@ import type {
     Matricula,
     MatriculaCreate,
     MatriculaUpdate,
-} from "../types";
+    } from "../types";
 
-import type { Aluno } from "@/features/alunos/types";
-import type { Plano } from "@/features/planos/types";
+    import type { Aluno } from "@/features/alunos/types";
+    import type { Plano } from "@/features/planos/types";
 
-import useNotification from "@/hooks/useNotification";
+    import useNotification from "@/hooks/useNotification";
 
-export default function useMatriculas() {
-
+    export default function useMatriculas() {
     const crud = useCrud<Matricula>(MatriculaService);
 
     const [alunos, setAlunos] = useState<Aluno[]>([]);
@@ -30,75 +29,58 @@ export default function useMatriculas() {
     } = useNotification();
 
     async function loadReferenceData() {
-
         if (alunos.length > 0 && planos.length > 0) {
-            return;
+        return;
         }
 
         setLoadingLists(true);
 
         try {
-            const data =
-                await MatriculaService.loadReferenceData();
-            setAlunos(data.alunos);
-            setPlanos(data.planos);
+        const data = await MatriculaService.loadReferenceData();
+        setAlunos(data.alunos);
+        setPlanos(data.planos);
         } catch {
-            showError(
-                "Erro ao carregar alunos e planos."
-            );
+        showError("Erro ao carregar alunos e planos.");
         } finally {
-            setLoadingLists(false);
+        setLoadingLists(false);
         }
     }
 
     async function create(data: MatriculaCreate) {
         try {
-            await MatriculaService.create(data);
-            showSuccess(
-                "Matrícula cadastrada com sucesso!"
-            );
-            await crud.reload();
+        await MatriculaService.create(data);
+        showSuccess("Matrícula cadastrada com sucesso!");
+        await crud.reload();
         } catch (error) {
-            showError(
-                "Erro ao cadastrar matrícula."
-            );
-            throw error;
+        showError("Erro ao cadastrar matrícula.");
+        throw error;
         }
     }
 
-    async function update(
-        id: number,
-        data: MatriculaUpdate
-    ) {
-
+    async function update(idMatricula: number, data: MatriculaUpdate) {
         try {
-            await MatriculaService.update(id, data);
-            showSuccess(
-                "Matrícula atualizada com sucesso!"
-            );
-            await crud.reload();
+        await MatriculaService.editarPlano(idMatricula, data.planoId);
+        showSuccess("Plano da matrícula atualizado com sucesso!");
+        await crud.reload();
         } catch (error) {
-            showError(
-                "Erro ao atualizar matrícula."
-            );
-            throw error;
+        showError("Erro ao atualizar o plano da matrícula.");
+        throw error;
         }
     }
 
-    async function remove(id: number) {
+    async function toggleStatus(matricula: Matricula) {
+        const novoStatus = !matricula.ativa;
+        const acaoText = novoStatus ? "ativada" : "desativada";
+
         try {
-            await MatriculaService.delete(id);
-            showSuccess(
-                "Matrícula removida com sucesso!"
-            );
-            await crud.reload();
+        await MatriculaService.alterarStatus(matricula.matricula, novoStatus);
+        showSuccess(`Matrícula ${acaoText} com sucesso!`);
+        await crud.reload();
         } catch {
-            showError(
-                "Erro ao remover matrícula."
-            );
+        showError(`Erro ao ${novoStatus ? "ativar" : "desativar"} matrícula.`);
         }
-
     }
+
     return {
         ...crud,
         alunos,
@@ -107,7 +89,7 @@ export default function useMatriculas() {
         loadReferenceData,
         create,
         update,
-        remove,
+        toggleStatus,
         notification,
         closeNotification,
     };
