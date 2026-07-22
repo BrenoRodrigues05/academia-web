@@ -8,6 +8,7 @@ import PublicRoute from "./PublicRoute";
 import AlunosPage from "@/features/alunos/pages/AlunosPage";
 import PersonaisPage from "@/features/personais/pages/PersonaisPage";
 import PlanosPage from "@/features/planos/pages/PlanosPage";
+import MatriculasPage from "@/features/matriculas/pages/MatriculasPage";
 
 export default function AppRoutes() {
   return (
@@ -32,6 +33,9 @@ export default function AppRoutes() {
         <Route path="*" element={<NotFoundPage />} />
     
       <Route path="/planos" element={<PlanosPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+
+        <Route path="/matriculas" element={<MatriculasPage />} />
         <Route path="*" element={<NotFoundPage />} />
         </Routes>
     </BrowserRouter>
