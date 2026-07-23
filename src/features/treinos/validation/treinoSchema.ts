@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const itemTreinoSchema = z.object({
+export const itemTreinoSchema = z.object({
     exercicioId: z
         .number({ message: "Selecione um exercício." })
         .positive("Selecione um exercício."),
