@@ -29,11 +29,6 @@ export default function ExercicioTable({
 
     const columns: GridColDef<Exercicio>[] = [
         {
-            field: "id",
-            headerName: "ID",
-            width: 90,
-        },
-        {
             field: "nome",
             headerName: "Nome",
             flex: 1,

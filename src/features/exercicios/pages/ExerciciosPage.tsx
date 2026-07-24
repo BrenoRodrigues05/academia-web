@@ -8,6 +8,9 @@ import { LoadingOverlay, EmptyState, ErrorState } from "@/components/feedback";
 import { AppPagination, AppLoading } from "@/components/ui";
 import AppSnackbar from "@/components/feedback/AppSnackbar";
 
+import { GrupoMuscular } from "@/shared/enums/GrupoMuscular";
+import { GrupoMuscularLabel } from "../components/ExercicioForm";
+
 import useExercicios from "../hooks/useExercicios";
 import ExercicioDialog from "../components/ExercicioDialog";
 import ExercicioTable from "../components/ExercicioTable";
@@ -36,7 +39,6 @@ export default function ExerciciosPage() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [exercicioTarget, setExercicioTarget] = useState<Exercicio | null>(null);
 
-    // Filtros
     const [searchTerm, setSearchTerm] = useState("");
     const [grupoMuscularFilter, setGrupoMuscularFilter] = useState<string>("todos");
 
@@ -90,16 +92,11 @@ export default function ExerciciosPage() {
         }
     }
 
-    // Tratamento defensivo da lista
     const rawList: Exercicio[] = Array.isArray(data)
         ? data
         : Array.isArray(data?.content)
         ? data.content
         : [];
-
-    const gruposMuscularesDisponiveis = Array.from(
-        new Set(rawList.map((item) => item.grupoMuscular).filter(Boolean))
-    );
 
     const filteredExercicios = rawList.filter((exercicio) => {
         const passaNome =
@@ -108,7 +105,7 @@ export default function ExerciciosPage() {
 
         const passaGrupo =
             grupoMuscularFilter === "todos" ||
-            exercicio.grupoMuscular?.toLowerCase() === grupoMuscularFilter.toLowerCase();
+            exercicio.grupoMuscular === grupoMuscularFilter;
 
         return passaNome && passaGrupo;
     });
@@ -198,9 +195,9 @@ export default function ExerciciosPage() {
                                     onChange={(e) => setGrupoMuscularFilter(e.target.value)}
                                 >
                                     <MenuItem value="todos">Todos os grupos</MenuItem>
-                                    {gruposMuscularesDisponiveis.map((grupo) => (
-                                        <MenuItem key={grupo} value={grupo}>
-                                            {grupo}
+                                    {Object.entries(GrupoMuscular).map(([chave, valor]) => (
+                                        <MenuItem key={chave} value={valor}>
+                                            {GrupoMuscularLabel[chave as keyof typeof GrupoMuscularLabel] ?? valor}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -243,10 +240,10 @@ export default function ExerciciosPage() {
             />
 
             <AppSnackbar
-            open={notification.open}
-            message={notification.message}
-            severity={notification.severity}
-            onClose={closeNotification}
+                open={notification.open}
+                message={notification.message}
+                severity={notification.severity}
+                onClose={closeNotification}
             />
         </>
     );

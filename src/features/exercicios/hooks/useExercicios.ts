@@ -93,69 +93,6 @@ export default function useExercicios() {
 
     }
 
-    async function searchByGrupoMuscular(
-        grupoMuscular: string
-    ) {
-
-        const termo = grupoMuscular.trim();
-
-        if (
-            termo === lastSearch.term &&
-            lastSearch.type === "grupoMuscular"
-        ) {
-            return;
-        }
-
-        setLastSearch({
-            type: "grupoMuscular",
-            term: termo
-        });
-
-        if (!termo) {
-
-            setSearchResults(null);
-
-            return;
-
-        }
-
-        setSearchLoading(true);
-
-        try {
-
-            const resultados =
-                await ExercicioService.findByGrupoMuscular(termo);
-
-            setSearchResults(resultados);
-
-        } catch (error) {
-
-            const axiosError = error as AxiosError;
-
-            if (axiosError.response?.status === 404) {
-
-                setSearchResults([]);
-
-                showError(
-                    "Nenhum exercício encontrado para esse grupo muscular."
-                );
-
-            } else {
-
-                showError(
-                    "Erro ao buscar grupo muscular."
-                );
-
-            }
-
-        } finally {
-
-            setSearchLoading(false);
-
-        }
-
-    }
-
     async function create(data: unknown) {
 
         try {
@@ -253,8 +190,6 @@ export default function useExercicios() {
             searchResults !== null,
 
         searchByNome,
-
-        searchByGrupoMuscular,
 
         create,
 

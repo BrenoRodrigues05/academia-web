@@ -21,20 +21,6 @@ class ExercicioService extends BaseCrudService<Exercicio> {
         return response.data;
     }
 
-    async findByGrupoMuscular(
-        grupoMuscular: string
-    ): Promise<Exercicio[]> {
-
-        const response = await api.get<Exercicio[]>(
-            `${this.endpoint}/grupo-muscular`,
-            {
-                params: { grupoMuscular }
-            }
-        );
-
-        return response.data;
-    }
-
 }
 
 export default new ExercicioService();

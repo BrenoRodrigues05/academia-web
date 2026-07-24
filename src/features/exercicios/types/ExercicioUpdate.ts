@@ -1,8 +1,10 @@
+import { GrupoMuscular } from "@/shared/enums/GrupoMuscular";
+
 export interface ExercicioUpdate {
 
     nome: string;
 
-    grupoMuscular: string;
+    grupoMuscular: GrupoMuscular
 
     descricao: string;
 

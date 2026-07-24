@@ -2,6 +2,7 @@ import { Button, Grid, TextField } from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { GrupoMuscular } from "@/shared/enums/GrupoMuscular";
 
 import {
     exercicioSchema,
@@ -13,6 +14,21 @@ import type { Exercicio } from "../types";
 type Props = {
     exercicio?: Exercicio | null;
     onSubmit: (data: ExercicioFormData) => Promise<void>;
+};
+
+export const GrupoMuscularLabel: Record<keyof typeof GrupoMuscular, string> = {
+    PEITORAL: "Peitoral",
+    COSTAS: "Costas",
+    OMBROS: "Ombros",
+    BICEPS: "Bíceps",
+    TRICEPS: "Tríceps",
+    ANTEBRACO: "Antebraço",
+    ABDOMEN: "Abdômen",
+    GLUTEOS: "Glúteos",
+    QUADRICEPS: "Quadríceps",
+    POSTERIOR: "Posterior",
+    PANTURRILHAS: "Panturrilhas",
+    CARDIO: "Cardio",
 };
 
 export default function ExercicioForm({
@@ -83,16 +99,27 @@ export default function ExercicioForm({
                 </Grid>
 
                 <Grid size={12}>
-
-                    <TextField
-                        label="Grupo Muscular"
-                        fullWidth
-                        {...register("grupoMuscular")}
-                        error={!!errors.grupoMuscular}
-                        helperText={errors.grupoMuscular?.message}
-                    />
-
-                </Grid>
+                <TextField
+                    select
+                    label="Grupo Muscular"
+                    fullWidth
+                    slotProps={{
+                    select: {
+                        native: true,
+                    },
+                    }}
+                    {...register("grupoMuscular")}
+                    error={!!errors.grupoMuscular}
+                    helperText={errors.grupoMuscular?.message}
+                >
+                    <option value="" disabled hidden />
+                    {Object.entries(GrupoMuscular).map(([chave, valor]) => (
+                    <option key={chave} value={valor}>
+                        {GrupoMuscularLabel[chave as keyof typeof GrupoMuscularLabel]}
+                    </option>
+                    ))}
+                </TextField>
+            </Grid>
 
                 <Grid size={12}>
 
