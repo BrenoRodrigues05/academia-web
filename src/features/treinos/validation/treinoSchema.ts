@@ -60,6 +60,24 @@ export const treinoSchema = z.object({
         path: ["dataFim"],
         message: "A data final deve ser maior ou igual à data inicial."
     }
+    
+).refine(
+    (data) => {
+
+        const ids = data.itens.map(
+            item => item.exercicioId
+        );
+
+        return ids.length === new Set(ids).size;
+
+    },
+    {
+
+        path: ["itens"],
+
+        message: "Não é permitido adicionar o mesmo exercício duas vezes."
+
+    }
 );
 
 export type TreinoFormData = z.infer<typeof treinoSchema>;

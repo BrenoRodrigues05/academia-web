@@ -23,6 +23,20 @@ export default function useTreinos() {
         term: "",
     });
 
+    function clearSearch() {
+
+    setSearchResults(null);
+
+    setLastSearch({
+
+        type: null,
+
+        term: "",
+
+    });
+
+}
+
     const {
         notification,
         showSuccess,
@@ -43,7 +57,7 @@ export default function useTreinos() {
         });
 
         if (!termo) {
-            setSearchResults(null);
+            clearSearch();
             return;
         }
 
@@ -159,7 +173,7 @@ export default function useTreinos() {
         try {
             await TreinoService.create(data);
             showSuccess("Treino cadastrado com sucesso!");
-            setSearchResults(null);
+            clearSearch();
             await crud.reload();
         } catch (error) {
             showError("Erro ao cadastrar treino.");
@@ -171,7 +185,7 @@ export default function useTreinos() {
         try {
             await TreinoService.update(id, data);
             showSuccess("Treino atualizado com sucesso!");
-            setSearchResults(null);
+            clearSearch();
             await crud.reload();
         } catch (error) {
             showError("Erro ao atualizar treino.");
@@ -185,7 +199,7 @@ export default function useTreinos() {
             showSuccess(
                 `Treino ${treino.ativo ? "desativado" : "ativado"} com sucesso!`
             );
-            setSearchResults(null);
+            clearSearch();
             await crud.reload();
         } catch {
             showError("Erro ao alterar status.");
@@ -196,7 +210,7 @@ export default function useTreinos() {
         try {
             await TreinoService.delete(id);
             showSuccess("Treino removido com sucesso!");
-            setSearchResults(null);
+            clearSearch();
             await crud.reload();
         } catch {
             showError("Erro ao remover treino.");

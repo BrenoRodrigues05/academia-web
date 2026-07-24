@@ -134,6 +134,17 @@ export default function TreinoForm({
             exercicio,
         };
 
+        const exercicioJaExiste = itens.some(
+            (item, index) =>
+                item.exercicioId === data.exercicioId &&
+                index !== editingIndex
+        );
+
+        if (exercicioJaExiste) {
+            alert("Este exercício já foi adicionado ao treino.");
+            return;
+        }
+
         if (editingIndex !== null) {
             const copia = [...itens];
             copia[editingIndex] = item;
