@@ -121,7 +121,6 @@ export default function ItemTreinoTable({
                                 <Stack>
 
                                     <Typography sx={{ fontWeight: 600 }}>
-                                        fontWeight={600}
                                         {item.exercicio.nome}
                                     </Typography>
 

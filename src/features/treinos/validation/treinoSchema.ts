@@ -36,6 +36,10 @@ export const treinoSchema = z.object({
         .number({ message: "Selecione um aluno." })
         .positive("Selecione um aluno."),
 
+    personalId: z
+        .number({ message: "Selecione um personal." })
+        .positive("Selecione um personal."),
+
     dataInicio: z
         .string({ message: "Informe a data de início." })
         .min(1, "Informe a data de início."),

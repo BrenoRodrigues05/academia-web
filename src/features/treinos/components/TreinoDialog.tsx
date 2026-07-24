@@ -7,7 +7,6 @@ import {
 import TreinoForm from "./TreinoForm";
 
 import type { Treino } from "../types";
-
 import type { Aluno } from "@/features/alunos/types";
 import type { Exercicio } from "@/features/exercicios/types";
 import type { TreinoFormData } from "../validation/treinoSchema";
@@ -17,10 +16,9 @@ type Props = {
     treino?: Treino;
     alunos: Aluno[];
     exercicios: Exercicio[];
+    currentPersonalId: number; 
     onClose: () => void;
-    onSubmit: (
-        data: TreinoFormData
-    ) => Promise<void>;
+    onSubmit: (data: TreinoFormData) => Promise<void>;
 };
 
 export default function TreinoDialog({
@@ -28,62 +26,35 @@ export default function TreinoDialog({
     treino,
     alunos,
     exercicios,
+    currentPersonalId,
     onClose,
     onSubmit,
 }: Props) {
-
-    async function handleSubmit(
-        data: TreinoFormData
-    ) {
-
+    async function handleSubmit(data: TreinoFormData) {
         await onSubmit(data);
-
         onClose();
-
     }
 
     return (
-
         <Dialog
-
             open={open}
-
             onClose={onClose}
-
             fullWidth
-
             maxWidth="lg"
-
         >
-
             <DialogTitle>
-
-                {treino
-
-                    ? "Editar Treino"
-
-                    : "Novo Treino"}
-
+                {treino ? "Editar Treino" : "Novo Treino"}
             </DialogTitle>
 
             <DialogContent>
-
                 <TreinoForm
-
                     alunos={alunos}
-
                     exercicios={exercicios}
-
+                    currentPersonalId={currentPersonalId}
                     initialData={treino}
-
                     onSubmit={handleSubmit}
-
                 />
-
             </DialogContent>
-
         </Dialog>
-
     );
-
 }

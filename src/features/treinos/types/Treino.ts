@@ -19,7 +19,11 @@ export interface Treino {
 
     aluno: Aluno;
 
+    nomeAluno: string;
+
     personal: Personal;
+
+    nomePersonal: string;
 
     itens: ItemTreino[];
 

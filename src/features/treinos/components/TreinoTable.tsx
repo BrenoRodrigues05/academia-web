@@ -7,7 +7,6 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TablePagination,
     TableRow,
     Tooltip,
 } from "@mui/material";
@@ -19,256 +18,89 @@ import AutorenewIcon from "@mui/icons-material/Autorenew";
 import type { Treino } from "../types";
 
 type Props = {
-    data: {
-        content: Treino[];
-        totalElements: number;
-        totalPages: number;
-    };
-    page: number;
-    rowsPerPage: number;
-    onPageChange: (
-        page: number
-    ) => void;
-
-    onRowsPerPageChange: (
-        rows: number
-    ) => void;
-
-    onEdit: (
-        treino: Treino
-    ) => void;
-
-    onDelete: (
-        treino: Treino
-    ) => void;
-
-    onStatus: (
-        treino: Treino
-    ) => void;
-
+    data: Treino[];
+    onEdit: (treino: Treino) => void;
+    onDelete: (treino: Treino) => void;
+    onStatus?: (treino: Treino) => void;
 };
 
 export default function TreinoTable({
     data,
-    page,
-    rowsPerPage,
-    onPageChange,
-    onRowsPerPageChange,
     onEdit,
     onDelete,
     onStatus,
 }: Props) {
-
     return (
-
-        <TableContainer component={Paper}>
-
+        <TableContainer component={Paper} variant="outlined">
             <Table>
-
                 <TableHead>
-
                     <TableRow>
-
-                        <TableCell>
-
-                            Nome
-
-                        </TableCell>
-
-                        <TableCell>
-
-                            Aluno
-
-                        </TableCell>
-
-                        <TableCell>
-
-                            Personal
-
-                        </TableCell>
-
-                        <TableCell>
-
-                            Início
-
-                        </TableCell>
-
-                        <TableCell>
-
-                            Fim
-
-                        </TableCell>
-
-                        <TableCell>
-
-                            Status
-
-                        </TableCell>
-
-                        <TableCell
-                            align="center"
-                        >
-
-                            Ações
-
-                        </TableCell>
-
+                        <TableCell>Nome</TableCell>
+                        <TableCell>Aluno</TableCell>
+                        <TableCell>Personal</TableCell>
+                        <TableCell>Início</TableCell>
+                        <TableCell>Fim</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell align="center">Ações</TableCell>
                     </TableRow>
-
                 </TableHead>
 
                 <TableBody>
+                    {data.map((treino) => (
+                        <TableRow key={treino.id} hover>
+                            <TableCell>{treino.nome}</TableCell>
+                            
+                            <TableCell>{treino.nomeAluno ?? "-"}</TableCell>
+                            <TableCell>{treino.nomePersonal ?? "-"}</TableCell>
 
-                    {data.content.map((treino) => (
-
-                        <TableRow
-                            key={treino.id}
-                            hover
-                        >
-
-                            <TableCell>
-
-                                {treino.nome}
-
-                            </TableCell>
+                            <TableCell>{treino.dataInicio ?? "-"}</TableCell>
+                            <TableCell>{treino.dataFim ?? "-"}</TableCell>
 
                             <TableCell>
-
-                                {treino.aluno.nome}
-
-                            </TableCell>
-
-                            <TableCell>
-
-                                {treino.personal.nome}
-
-                            </TableCell>
-
-                            <TableCell>
-
-                                {treino.dataInicio}
-
-                            </TableCell>
-
-                            <TableCell>
-
-                                {treino.dataFim ?? "-"}
-
-                            </TableCell>
-
-                            <TableCell>
-
                                 <Chip
-
-                                    label={
-                                        treino.ativo
-                                            ? "Ativo"
-                                            : "Inativo"
-                                    }
-
-                                    color={
-                                        treino.ativo
-                                            ? "success"
-                                            : "default"
-                                    }
-
+                                    label={treino.ativo ? "Ativo" : "Inativo"}
+                                    color={treino.ativo ? "success" : "default"}
                                     size="small"
-
                                 />
-
                             </TableCell>
 
-                            <TableCell
-                                align="center"
-                            >
-
+                            <TableCell align="center">
                                 <Tooltip title="Editar">
-
                                     <IconButton
                                         color="primary"
-                                        onClick={() =>
-                                            onEdit(treino)
-                                        }
+                                        size="small"
+                                        onClick={() => onEdit(treino)}
                                     >
-
-                                        <EditIcon />
-
+                                        <EditIcon fontSize="small" />
                                     </IconButton>
-
                                 </Tooltip>
 
-                                <Tooltip title="Alterar Status">
-
-                                    <IconButton
-                                        color="warning"
-                                        onClick={() =>
-                                            onStatus(treino)
-                                        }
-                                    >
-
-                                        <AutorenewIcon />
-
-                                    </IconButton>
-
-                                </Tooltip>
+                                {onStatus && (
+                                    <Tooltip title="Alterar Status">
+                                        <IconButton
+                                            color="warning"
+                                            size="small"
+                                            onClick={() => onStatus(treino)}
+                                        >
+                                            <AutorenewIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
 
                                 <Tooltip title="Excluir">
-
                                     <IconButton
                                         color="error"
-                                        onClick={() =>
-                                            onDelete(treino)
-                                        }
+                                        size="small"
+                                        onClick={() => onDelete(treino)}
                                     >
-
-                                        <DeleteIcon />
-
+                                        <DeleteIcon fontSize="small" />
                                     </IconButton>
-
                                 </Tooltip>
-
                             </TableCell>
-
                         </TableRow>
-
                     ))}
-
                 </TableBody>
-
             </Table>
-
-            <TablePagination
-
-                component="div"
-
-                count={data.totalElements}
-
-                page={page}
-
-                rowsPerPage={rowsPerPage}
-
-                onPageChange={(_, page) =>
-
-                    onPageChange(page)
-
-                }
-
-                onRowsPerPageChange={(event) =>
-
-                    onRowsPerPageChange(
-
-                        Number(event.target.value)
-
-                    )
-
-                }
-
-                rowsPerPageOptions={[5, 10, 20]}
-
-            />
-
         </TableContainer>
-
     );
-
 }

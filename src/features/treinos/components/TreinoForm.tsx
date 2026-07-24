@@ -13,11 +13,7 @@ import {
 
 import AddIcon from "@mui/icons-material/Add";
 
-import {
-    Controller,
-    useForm,
-} from "react-hook-form";
-
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -27,12 +23,10 @@ import {
 } from "../validation/treinoSchema";
 
 import type { Treino } from "../types";
-
 import type { Aluno } from "@/features/alunos/types";
 import type { Exercicio } from "@/features/exercicios/types";
 
 import ItemTreinoDialog from "./ItemTreinoDialog";
-
 import ItemTreinoTable, {
     type ItemTreinoTableData,
 } from "./ItemTreinoTable";
@@ -40,15 +34,15 @@ import ItemTreinoTable, {
 type Props = {
     alunos: Aluno[];
     exercicios: Exercicio[];
+    currentPersonalId: number; 
     initialData?: Treino;
-    onSubmit: (
-        data: TreinoFormData
-    ) => Promise<void>;
+    onSubmit: (data: TreinoFormData) => Promise<void>;
 };
 
 export default function TreinoForm({
     alunos,
     exercicios,
+    currentPersonalId,
     initialData,
     onSubmit,
 }: Props) {
@@ -57,17 +51,15 @@ export default function TreinoForm({
         control,
         handleSubmit,
         reset,
-        formState: {
-            errors,
-            isSubmitting,
-        },
         setValue,
+        formState: { errors, isSubmitting },
     } = useForm<TreinoFormData>({
         resolver: zodResolver(treinoSchema),
         defaultValues: {
             nome: "",
             observacoes: "",
             alunoId: 0,
+            personalId: currentPersonalId, 
             dataInicio: "",
             dataFim: "",
             itens: [],
@@ -95,11 +87,12 @@ export default function TreinoForm({
             nome: initialData.nome,
             observacoes: initialData.observacoes ?? "",
             alunoId: initialData.aluno.id,
+            personalId: initialData.personal?.id ?? currentPersonalId,
             dataInicio: initialData.dataInicio,
             dataFim: initialData.dataFim ?? "",
             itens: listaFormatada,
         });
-    }, [initialData, reset]);
+    }, [initialData, reset, currentPersonalId]);
 
     useEffect(() => {
         setValue(
@@ -165,8 +158,7 @@ export default function TreinoForm({
                             helperText={errors.nome?.message}
                         />
                     </Grid>
-
-                    <Grid size={{ xs: 12, md: 6 }}>
+                    <Grid size={12}> 
                         <Controller
                             control={control}
                             name="alunoId"
@@ -192,7 +184,7 @@ export default function TreinoForm({
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth
                             type="date"
@@ -206,7 +198,7 @@ export default function TreinoForm({
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth
                             type="date"
@@ -243,10 +235,7 @@ export default function TreinoForm({
                         mb: 2,
                     }}
                 >
-                    <Typography
-                        variant="h6"
-                        sx={{ fontWeight: 600 }}
-                    >
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
                         Exercícios
                     </Typography>
 
@@ -266,10 +255,7 @@ export default function TreinoForm({
                 />
 
                 {errors.itens && (
-                    <Typography
-                        color="error"
-                        sx={{ mt: 1 }}
-                    >
+                    <Typography color="error" sx={{ mt: 1 }}>
                         {errors.itens.message}
                     </Typography>
                 )}
