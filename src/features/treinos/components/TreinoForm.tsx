@@ -71,28 +71,45 @@ export default function TreinoForm({
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
     useEffect(() => {
-    if (!initialData) return;
+        if (!initialData) return;
 
-    const listaFormatada = (initialData.itens ?? []).map((item) => ({
-        exercicioId: item.exercicio.id,
-        exercicio: item.exercicio,
-        series: item.series,
-        repeticoes: item.repeticoes,
-        descansoSegundos: item.descansoSegundos,
-    }));
+        const itensOriginais = (initialData as any).itens ?? (initialData as any).itensTreino ?? [];
 
-    setItens(listaFormatada);
+        const listaFormatada: ItemTreinoTableData[] = itensOriginais
+            .map((item: any) => {
+                const exercicioEncontrado =
+                    item.exercicio ??
+                    exercicios.find((e) => e.id === (item.exercicioId ?? item.exercicio?.id));
 
-    reset({
-        nome: initialData.nome,
-        observacoes: initialData.observacoes ?? "",
-        alunoId: initialData.aluno?.id ?? (initialData as any).alunoId ?? 0,
-        personalId: initialData.personal?.id ?? (initialData as any).personalId ?? currentPersonalId,
-        dataInicio: initialData.dataInicio,
-        dataFim: initialData.dataFim ?? "",
-        itens: listaFormatada,
-    });
-}, [initialData, reset, currentPersonalId]);
+                if (!exercicioEncontrado) return null;
+
+                return {
+                    exercicioId: exercicioEncontrado.id,
+                    exercicio: exercicioEncontrado,
+                    series: item.series,
+                    repeticoes: item.repeticoes,
+                    descansoSegundos: item.descansoSegundos,
+                };
+            })
+            .filter((item: ItemTreinoTableData | null): item is ItemTreinoTableData => item !== null);
+
+        setItens(listaFormatada);
+
+        reset({
+            nome: initialData.nome,
+            observacoes: initialData.observacoes ?? "",
+            alunoId: initialData.aluno?.id ?? (initialData as any).alunoId ?? 0,
+            personalId: initialData.personal?.id ?? (initialData as any).personalId ?? currentPersonalId,
+            dataInicio: initialData.dataInicio,
+            dataFim: initialData.dataFim ?? "", 
+            itens: listaFormatada.map((item: ItemTreinoTableData) => ({
+                exercicioId: item.exercicioId,
+                series: item.series,
+                repeticoes: item.repeticoes,
+                descansoSegundos: item.descansoSegundos,
+            })),
+        });
+    }, [initialData, exercicios, reset, currentPersonalId]);
 
     useEffect(() => {
         setValue(
