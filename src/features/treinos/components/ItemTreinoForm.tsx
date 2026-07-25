@@ -81,14 +81,17 @@ export default function ItemTreinoForm({
     });
 
     useEffect(() => {
-
-        if (initialData) {
-
-            reset(initialData);
-
-        }
-
-    }, [initialData, reset]);
+    if (initialData) {
+        reset(initialData);
+    } else {
+        reset({
+            exercicioId: 0,
+            series: 3,
+            repeticoes: 12,
+            descansoSegundos: 60,
+        });
+    }
+}, [initialData, reset]);
 
     return (
 
@@ -101,64 +104,34 @@ export default function ItemTreinoForm({
                 <Grid size={12}>
 
                     <Controller
-
-                        control={control}
-
-                        name="exercicioId"
-
-                        render={({ field }) => (
-
-                            <TextField
-
-                                select
-
-                                fullWidth
-
-                                label="Exercício"
-
-                                {...field}
-
-                                error={
-                                    !!errors.exercicioId
-                                }
-
-                                helperText={
-                                    errors.exercicioId?.message
-                                }
-
-                            >
-
-                                {exercicios.map(
-
-                                    (exercicio) => (
-
+                            control={control}
+                            name="exercicioId"
+                            render={({ field }) => (
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label="Exercício"
+                                    value={field.value}
+                                    onChange={(event) =>
+                                        field.onChange(Number(event.target.value))
+                                    }
+                                    onBlur={field.onBlur}
+                                    name={field.name}
+                                    inputRef={field.ref}
+                                    error={!!errors.exercicioId}
+                                    helperText={errors.exercicioId?.message}
+                                >
+                                    {exercicios.map((exercicio) => (
                                         <MenuItem
-
-                                            key={
-                                                exercicio.id
-                                            }
-
-                                            value={
-                                                exercicio.id
-                                            }
-
+                                            key={exercicio.id}
+                                            value={exercicio.id}
                                         >
-
-                                            {
-                                                exercicio.nome
-                                            }
-
+                                            {exercicio.nome}
                                         </MenuItem>
-
-                                    )
-
-                                )}
-
-                            </TextField>
-
-                        )}
-
-                    />
+                                    ))}
+                                </TextField>
+                            )}
+                        />
 
                 </Grid>
 
