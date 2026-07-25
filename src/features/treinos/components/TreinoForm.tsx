@@ -71,28 +71,28 @@ export default function TreinoForm({
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
     useEffect(() => {
-        if (!initialData) return;
+    if (!initialData) return;
 
-        const listaFormatada = initialData.itens.map((item) => ({
-            exercicioId: item.exercicio.id,
-            exercicio: item.exercicio,
-            series: item.series,
-            repeticoes: item.repeticoes,
-            descansoSegundos: item.descansoSegundos,
-        }));
+    const listaFormatada = (initialData.itens ?? []).map((item) => ({
+        exercicioId: item.exercicio.id,
+        exercicio: item.exercicio,
+        series: item.series,
+        repeticoes: item.repeticoes,
+        descansoSegundos: item.descansoSegundos,
+    }));
 
-        setItens(listaFormatada);
+    setItens(listaFormatada);
 
-        reset({
-            nome: initialData.nome,
-            observacoes: initialData.observacoes ?? "",
-            alunoId: initialData.aluno.id,
-            personalId: initialData.personal?.id ?? currentPersonalId,
-            dataInicio: initialData.dataInicio,
-            dataFim: initialData.dataFim ?? "",
-            itens: listaFormatada,
-        });
-    }, [initialData, reset, currentPersonalId]);
+    reset({
+        nome: initialData.nome,
+        observacoes: initialData.observacoes ?? "",
+        alunoId: initialData.aluno?.id ?? (initialData as any).alunoId ?? 0,
+        personalId: initialData.personal?.id ?? (initialData as any).personalId ?? currentPersonalId,
+        dataInicio: initialData.dataInicio,
+        dataFim: initialData.dataFim ?? "",
+        itens: listaFormatada,
+    });
+}, [initialData, reset, currentPersonalId]);
 
     useEffect(() => {
         setValue(

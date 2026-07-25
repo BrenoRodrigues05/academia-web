@@ -1,18 +1,6 @@
-import {
-    IconButton,
-    Tooltip,
-    Box,
-} from "@mui/material";
-
-import {
-    DataGrid,
-    type GridColDef,
-    type GridRenderCellParams,
-} from "@mui/x-data-grid";
-
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-
+import CrudTable from "@/components/crud/CrudTable";
+import CrudActions from "@/components/crud/CrudActions";
+import type { CrudColumn } from "@/components/crud/types";
 import type { Exercicio } from "../types";
 
 type Props = {
@@ -27,72 +15,38 @@ export default function ExercicioTable({
     onDelete,
 }: Props) {
 
-    const columns: GridColDef<Exercicio>[] = [
+    const columns: CrudColumn<Exercicio>[] = [
         {
             field: "nome",
-            headerName: "Nome",
-            flex: 1,
-            minWidth: 220,
+            header: "Nome",
         },
         {
             field: "grupoMuscular",
-            headerName: "Grupo Muscular",
-            flex: 1,
-            minWidth: 180,
+            header: "Grupo Muscular",
         },
         {
             field: "descricao",
-            headerName: "Descrição",
-            flex: 2,
-            minWidth: 300,
+            header: "Descrição",
         },
         {
-            field: "acoes",
-            headerName: "Ações",
+            field: "id",
+            header: "Ações",
+            align: "center",
             width: 120,
-            sortable: false,
-            filterable: false,
-            disableColumnMenu: true,
-            renderCell: (params: GridRenderCellParams<Exercicio>) => (
-                <>
-                    <Tooltip title="Editar">
-                        <IconButton
-                            color="primary"
-                            onClick={() => onEdit(params.row)}
-                        >
-                            <EditIcon />
-                        </IconButton>
-                    </Tooltip>
-
-                    <Tooltip title="Excluir">
-                        <IconButton
-                            color="error"
-                            onClick={() => onDelete(params.row)}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
-                </>
+            render: (exercicio) => (
+                <CrudActions
+                    onEdit={() => onEdit(exercicio)}
+                    onDelete={() => onDelete(exercicio)}
+                />
             ),
         },
     ];
 
     return (
-        <Box sx={{ width: "100%" }}>
-            <DataGrid
-                rows={exercicios}
-                columns={columns}
-                autoHeight
-                disableRowSelectionOnClick
-                pageSizeOptions={[10, 20, 50]}
-                initialState={{
-                    pagination: {
-                        paginationModel: {
-                            pageSize: 10,
-                        },
-                    },
-                }}
-            />
-        </Box>
+        <CrudTable<Exercicio>
+            columns={columns}
+            rows={exercicios}
+            rowKey={(exercicio) => exercicio.id}
+        />
     );
 }
