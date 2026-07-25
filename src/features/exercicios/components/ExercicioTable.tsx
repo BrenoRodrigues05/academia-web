@@ -2,6 +2,7 @@ import CrudTable from "@/components/crud/CrudTable";
 import CrudActions from "@/components/crud/CrudActions";
 import type { CrudColumn } from "@/components/crud/types";
 import type { Exercicio } from "../types";
+import { GrupoMuscularLabel } from "@/shared/enums/GrupoMuscularLabel";
 
 type Props = {
     exercicios: Exercicio[];
@@ -23,6 +24,8 @@ export default function ExercicioTable({
         {
             field: "grupoMuscular",
             header: "Grupo Muscular",
+            render: (exercicio) =>
+                GrupoMuscularLabel[exercicio.grupoMuscular],
         },
         {
             field: "descricao",

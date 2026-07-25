@@ -9,7 +9,7 @@ import { AppPagination, AppLoading } from "@/components/ui";
 import AppSnackbar from "@/components/feedback/AppSnackbar";
 
 import { GrupoMuscular } from "@/shared/enums/GrupoMuscular";
-import { GrupoMuscularLabel } from "../components/ExercicioForm";
+import { GrupoMuscularLabel } from "@/shared/enums/GrupoMuscularLabel";
 
 import useExercicios from "../hooks/useExercicios";
 import ExercicioDialog from "../components/ExercicioDialog";
@@ -192,12 +192,19 @@ export default function ExerciciosPage() {
                                     labelId="grupo-muscular-filter-label"
                                     value={grupoMuscularFilter}
                                     label="Grupo Muscular"
-                                    onChange={(e) => setGrupoMuscularFilter(e.target.value)}
+                                    onChange={(e) =>
+                                        setGrupoMuscularFilter(
+                                            e.target.value as GrupoMuscular | "todos"
+                                        )
+                                    }
                                 >
-                                    <MenuItem value="todos">Todos os grupos</MenuItem>
-                                    {Object.entries(GrupoMuscular).map(([chave, valor]) => (
-                                        <MenuItem key={chave} value={valor}>
-                                            {GrupoMuscularLabel[chave as keyof typeof GrupoMuscularLabel] ?? valor}
+                                    <MenuItem value="todos">
+                                        Todos os grupos
+                                    </MenuItem>
+
+                                    {Object.values(GrupoMuscular).map((grupo) => (
+                                        <MenuItem key={grupo} value={grupo}>
+                                            {GrupoMuscularLabel[grupo]}
                                         </MenuItem>
                                     ))}
                                 </Select>

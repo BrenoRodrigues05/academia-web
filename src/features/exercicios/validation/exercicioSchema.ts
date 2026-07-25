@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GrupoMuscular } from "@/shared/enums/GrupoMuscular";
 
 export const exercicioSchema = z.object({
 
@@ -9,10 +10,9 @@ export const exercicioSchema = z.object({
         .max(100, "O nome deve possuir no máximo 100 caracteres."),
 
     grupoMuscular: z
-        .string()
-        .trim()
-        .min(3, "Informe o grupo muscular.")
-        .max(50, "O grupo muscular deve possuir no máximo 50 caracteres."),
+        .enum(GrupoMuscular, {
+            message: "Informe o grupo muscular."
+        }),
 
     descricao: z
         .string()
