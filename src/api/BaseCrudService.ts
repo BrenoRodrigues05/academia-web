@@ -20,6 +20,13 @@ export default class BaseCrudService<T> {
     return response.data;
   }
 
+  async count() {
+    const response = await api.get<number>(
+      `${this.endpoint}/contador`
+    );
+    return response.data;
+  }
+
   async findById(id: number) {
     const response = await api.get<T>(
       `${this.endpoint}/${id}`

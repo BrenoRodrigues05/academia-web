@@ -16,11 +16,15 @@ export function useCrud<T>(
             page: number,
             size: number
         ) => Promise<PageResponse<T>>;
+        count: () => Promise<number>;
     }
 ) {
 
     const [data, setData] =
         useState<PageResponse<T>>();
+
+    const [count, setCount] =
+        useState<number>(0);
 
     const [page, setPage] =
         useState(0);
@@ -36,6 +40,12 @@ export function useCrud<T>(
 
             const response =
                 await service.findAll(page, 10);
+
+            const total =
+            await service.count();
+
+            setData(response);
+            setCount(total);
 
             setData(response);
 
@@ -56,6 +66,8 @@ export function useCrud<T>(
     return {
 
         data,
+
+        count,
 
         page,
 
