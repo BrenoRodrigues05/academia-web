@@ -16,8 +16,9 @@ export function useCrud<T>(
             page: number,
             size: number
         ) => Promise<PageResponse<T>>;
-        count: () => Promise<number>;
-    }
+        count?: () => Promise<number>;
+    },
+    fetchCount: boolean = false
 ) {
 
     const [data, setData] =
@@ -41,13 +42,12 @@ export function useCrud<T>(
             const response =
                 await service.findAll(page, 10);
 
-            const total =
-            await service.count();
-
             setData(response);
-            setCount(total);
 
-            setData(response);
+            if (fetchCount && service.count) {
+                const total = await service.count();
+                setCount(total);
+            }
 
         } finally {
 
@@ -55,7 +55,7 @@ export function useCrud<T>(
 
         }
 
-    }, [page, service]);
+    }, [page, service, fetchCount]);
 
     useEffect(() => {
 

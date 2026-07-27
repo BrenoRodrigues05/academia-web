@@ -8,10 +8,19 @@ FitnessCenter,
 CreditCard,
 SportsGymnastics,
 } from "@mui/icons-material";
+import { useCrud } from "@/api/hooks/useCrud";
+import alunoService from "@/features/alunos/services/AlunoService";
+import PlanoService from "@/features/planos/api/PlanoService";
+import PersonalService from "@/features/personais/api/PersonalService";
+import TreinoService from "@/features/treinos/api/TreinoService";
 
 import DashboardCard from "./DashboardCard";
 
 export default function DashboardStats() {
+    const { count: totalAlunos } = useCrud(alunoService, true);
+    const { count: totalPlanos } = useCrud(PlanoService, true);
+    const { count: totalPersonais } = useCrud(PersonalService, true);
+    const { count: totalTreinos } = useCrud(TreinoService, true);
 
 return (
 <Grid container spacing={3}>
@@ -19,8 +28,7 @@ return (
 <DashboardCard
 
 title="Alunos"
-
-value={0}
+value={totalAlunos}
 
 icon={<People color="primary" />}
 
@@ -34,7 +42,7 @@ icon={<People color="primary" />}
 
 title="Planos"
 
-value={0}
+value={totalPlanos}
 
 icon={<CreditCard color="success" />}
 
@@ -48,7 +56,7 @@ icon={<CreditCard color="success" />}
 
 title="Personais"
 
-value={0}
+value={totalPersonais}
 
 icon={<SportsGymnastics color="warning" />}
 
@@ -62,7 +70,7 @@ icon={<SportsGymnastics color="warning" />}
 
 title="Treinos"
 
-value={0}
+value={totalTreinos}
 
 icon={<FitnessCenter color="error" />}
 
