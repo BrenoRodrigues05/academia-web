@@ -170,7 +170,9 @@ export default function usePersonais() {
             showSuccess("Personal removido com sucesso!");
             await crud.reload();
         } catch (error) {
-            showError("Erro ao remover personal.");
+            const err = error as AxiosError<{ message?: string }>;
+            const mensagemDoBackend = err.response?.data?.message;
+            showError(mensagemDoBackend || "Erro ao remover personal.");
         }
     }
 
