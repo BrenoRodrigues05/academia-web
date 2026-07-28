@@ -16,7 +16,7 @@ import type {
     MatriculaCreate,
 } from "../types";
 
-import type {MatriculaFormData} from "../validation/matriculasSchema";
+import type { MatriculaFormData } from "../validation/matriculasSchema";
 
 interface MatriculasDialogProps {
     open: boolean;
@@ -24,6 +24,7 @@ interface MatriculasDialogProps {
     onSubmit: (data: MatriculaFormData) => Promise<void>;
     alunos: Aluno[];
     planos: Plano[];
+    matriculas?: Matricula[];
     loading: boolean;
     matricula?: Matricula;
 }
@@ -34,18 +35,18 @@ export default function MatriculasDialog({
     onSubmit,
     alunos,
     planos,
+    matriculas = [],
     loading,
     matricula,
 }: MatriculasDialogProps) {
 
-    const defaultValues: Partial<MatriculaCreate> | undefined =
-        matricula
-            ? {
-                    alunoId: matricula.aluno.id,
-                    planoId: matricula.plano.id,
-                    ativa: matricula.ativa,
-                }
-            : undefined;
+    const defaultValues: Partial<MatriculaCreate> | undefined = matricula
+        ? {
+            alunoId: typeof matricula.aluno === "object" ? matricula.aluno?.id : matricula.aluno,
+            planoId: typeof matricula.plano === "object" ? matricula.plano?.id : matricula.plano,
+            ativa: matricula.ativa,
+        }
+        : undefined;
 
     return (
         <Dialog
@@ -54,7 +55,6 @@ export default function MatriculasDialog({
             fullWidth
             maxWidth="sm"
         >
-
             <DialogTitle>
                 {matricula
                     ? "Editar Matrícula"
@@ -66,21 +66,20 @@ export default function MatriculasDialog({
                     defaultValues={defaultValues}
                     alunos={alunos}
                     planos={planos}
+                    matriculas={matriculas} 
                     loading={loading}
                     onSubmit={onSubmit}
                 />
-
             </DialogContent>
 
             <DialogActions>
-
                 <Button
                     onClick={onClose}
                     color="inherit"
+                    disabled={loading}
                 >
                     Cancelar
                 </Button>
-
             </DialogActions>
         </Dialog>
     );

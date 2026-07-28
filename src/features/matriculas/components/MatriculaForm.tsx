@@ -1,26 +1,18 @@
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Alert, Autocomplete, Button, Stack, TextField } from "@mui/material";
 
-import {
-    Alert,
-    Autocomplete,
-    Button,
-    Stack,
-    TextField,
-    } from "@mui/material";
+import { matriculaSchema } from "../validation/matriculasSchema";
+import type { MatriculaFormData } from "../validation/matriculasSchema";
+import type { MatriculaCreate, Matricula } from "../types";
+import type { Aluno } from "@/features/alunos/types";
+import type { Plano } from "@/features/planos/types";
 
-    import { matriculaSchema } from "../validation/matriculasSchema";
-    import type { MatriculaFormData } from "../validation/matriculasSchema";
-
-    import type { MatriculaCreate } from "../types";
-
-    import type { Aluno } from "@/features/alunos/types";
-    import type { Plano } from "@/features/planos/types";
-
-    interface MatriculaFormProps {
+interface MatriculaFormProps {
     defaultValues?: Partial<MatriculaCreate>;
     alunos: Aluno[];
     planos: Plano[];
+    matriculas?: Matricula[];
     loading?: boolean;
     onSubmit: (data: MatriculaFormData) => void | Promise<void>;
     }
@@ -29,20 +21,32 @@ import {
     defaultValues,
     alunos,
     planos,
+    matriculas = [],
     loading = false,
     onSubmit,
     }: MatriculaFormProps) {
-    // Se a matrícula for enviada e estiver inativa, consideramos desabilitada
     const isMatriculaInativa = defaultValues?.ativa === false;
+    const idAlunoEmEdicao = defaultValues?.alunoId ?? 0;
 
     const { control, handleSubmit } = useForm<MatriculaFormData>({
         resolver: zodResolver(matriculaSchema),
-
         defaultValues: {
         alunoId: defaultValues?.alunoId ?? 0,
         planoId: defaultValues?.planoId ?? 0,
         ativa: defaultValues?.ativa ?? true,
         },
+    });
+
+    const alunosDisponiveis = alunos.filter((aluno) => {
+        if (idAlunoEmEdicao > 0 && aluno.id === idAlunoEmEdicao) {
+        return true;
+        }
+
+        const jaPossuiMatricula = matriculas.some(
+        (m) => m.aluno?.id === aluno.id && m.ativa
+        );
+
+        return !jaPossuiMatricula;
     });
 
     return (
@@ -60,7 +64,7 @@ import {
             render={({ field, fieldState }) => (
                 <Autocomplete
                 disabled={isMatriculaInativa || loading}
-                options={alunos}
+                options={alunosDisponiveis} 
                 getOptionLabel={(option) => option.nome}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={

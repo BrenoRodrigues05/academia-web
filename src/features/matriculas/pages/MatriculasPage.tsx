@@ -244,6 +244,7 @@ import {
                 onSubmit={handleSubmit}
                 alunos={alunos}
                 planos={planos}
+                matriculas={rawList}
                 loading={submitting}
                 matricula={selectedMatricula}
             />
