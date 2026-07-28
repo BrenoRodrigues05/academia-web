@@ -11,9 +11,11 @@ import AppSnackbar from "@/components/feedback/AppSnackbar";
 import useTreinos from "../hooks/useTreinos";
 import useAlunos from "@/features/alunos/hooks/useAlunos";
 import useExercicios from "@/features/exercicios/hooks/useExercicios";
+import usePersonais from "@/features/personais/hooks/usePersonais";
 
 import TreinoDialog from "../components/TreinoDialog";
 import TreinoTable from "../components/TreinoTable";
+import ReatribuirPersonalDialog from "../components/ReatribuirPersonalDialog";
 
 import type { Treino } from "../types";
 import type { TreinoFormData } from "../validation/treinoSchema";
@@ -22,6 +24,17 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export default function TreinoPage() {
     const { user } = useAuth();
+
+    const isAdminOrSuperAdmin = Boolean(
+    user?.role && [
+        "SUPER_ADMIN", 
+        "ADMIN"
+    ].includes(user.role)
+);
+
+    const { data: personaisData } = usePersonais(); 
+    const personais = personaisData?.content ?? (Array.isArray(personaisData) ? personaisData : []);
+
     const treinoHook = useTreinos();
     const alunoHook = useAlunos();
     const exercicioHook = useExercicios();
@@ -32,6 +45,8 @@ export default function TreinoPage() {
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [treinoTarget, setTreinoTarget] = useState<Treino | null>(null);
+
+    const [treinoParaReatribuir, setTreinoParaReatribuir] = useState<Treino | null>(null);
 
     const [searchTerm, setSearchTerm] = useState("");
     const [alunoFilter, setAlunoFilter] = useState<string>("todos");
@@ -91,6 +106,10 @@ export default function TreinoPage() {
         }
     }
 
+    async function handleReatribuirConfirm(treinoId: number, novoPersonalId: number) {
+        await treinoHook.reatribuirPersonal(treinoId, novoPersonalId);
+    }
+
     const rawList: Treino[] = Array.isArray(treinoHook.data)
         ? treinoHook.data
         : Array.isArray(treinoHook.data?.content)
@@ -110,18 +129,18 @@ export default function TreinoPage() {
         : [];
 
     const filteredTreinos = rawList.filter((treino) => {
-    const passaNome =
-        !searchTerm ||
-        treino.nome?.toLowerCase().includes(searchTerm.trim().toLowerCase());
+        const passaNome =
+            !searchTerm ||
+            treino.nome?.toLowerCase().includes(searchTerm.trim().toLowerCase());
 
-    const alunoIdTreino = treino.aluno?.id ?? (treino as any).alunoId;
+        const alunoIdTreino = treino.aluno?.id ?? (treino as any).alunoId;
 
-    const passaAluno =
-        alunoFilter === "todos" ||
-        String(alunoIdTreino) === String(alunoFilter);
+        const passaAluno =
+            alunoFilter === "todos" ||
+            String(alunoIdTreino) === String(alunoFilter);
 
-    return passaNome && passaAluno;
-});
+        return passaNome && passaAluno;
+    });
 
     const renderTableContent = () => {
         if (treinoHook.loading) {
@@ -149,6 +168,11 @@ export default function TreinoPage() {
                 onEdit={handleEditar}
                 onDelete={handleSolicitarExclusao}
                 onStatus={treinoHook.alterarStatus}
+                onReatribuirPersonal={
+                    isAdminOrSuperAdmin
+                        ? (treino) => setTreinoParaReatribuir(treino)
+                        : undefined
+                }
             />
         );
     };
@@ -214,7 +238,7 @@ export default function TreinoPage() {
                                 >
                                     <MenuItem value="todos">Todos os alunos</MenuItem>
                                     {alunosList.map((aluno) => (
-                                        <MenuItem key={aluno.id} value={String(aluno.id)}> 
+                                        <MenuItem key={aluno.id} value={String(aluno.id)}>
                                             {aluno.nome}
                                         </MenuItem>
                                     ))}
@@ -238,15 +262,27 @@ export default function TreinoPage() {
                     ) : undefined
                 }
                 dialogs={
-                    <TreinoDialog
-                        open={dialogOpen}
-                        treino={selectedTreino}
-                        alunos={alunosList}
-                        exercicios={exerciciosList}
-                        currentPersonalId={user?.id ?? 0}
-                        onClose={handleClose}
-                        onSubmit={handleSubmit}
-                    />
+                    <>
+                        <TreinoDialog
+                            open={dialogOpen}
+                            treino={selectedTreino}
+                            alunos={alunosList}
+                            exercicios={exerciciosList}
+                            personais={personais}
+                            isAdminOrSuperAdmin={isAdminOrSuperAdmin}
+                            currentPersonalId={user?.personalId ?? user?.id ?? 0}
+                            onClose={handleClose}
+                            onSubmit={handleSubmit}
+                        />
+
+                        <ReatribuirPersonalDialog
+                            open={Boolean(treinoParaReatribuir)}
+                            treino={treinoParaReatribuir}
+                            personais={personais}
+                            onClose={() => setTreinoParaReatribuir(null)}
+                            onConfirm={handleReatribuirConfirm}
+                        />
+                    </>
                 }
             />
 

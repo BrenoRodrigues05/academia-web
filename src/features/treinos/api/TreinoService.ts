@@ -100,6 +100,18 @@ class TreinoService extends BaseCrudService<Treino> {
         return response.data;
     }
 
+    async reatribuirPersonal(treinoId: number, novoPersonalId: number, nomeTreino?: string): Promise<Treino> {
+    const response = await api.patch<Treino>(
+        `${this.endpoint}/${treinoId}/reatribuir-personal`,
+        {
+            novoPersonalId: Number(novoPersonalId),
+            nome: nomeTreino ?? "Treino"
+        }
+    );
+
+    return response.data;
+}
+
 }
 
 export default new TreinoService();

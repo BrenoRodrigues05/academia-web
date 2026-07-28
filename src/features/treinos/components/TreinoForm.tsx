@@ -24,6 +24,7 @@ import {
 
 import type { Treino } from "../types";
 import type { Aluno } from "@/features/alunos/types";
+import type { Personal } from "@/features/personais/types";
 import type { Exercicio } from "@/features/exercicios/types";
 
 import ItemTreinoDialog from "./ItemTreinoDialog";
@@ -34,7 +35,9 @@ import ItemTreinoTable, {
 type Props = {
     alunos: Aluno[];
     exercicios: Exercicio[];
+    personais: Personal[];
     currentPersonalId: number; 
+    isAdminOrSuperAdmin?: boolean;
     initialData?: Treino;
     onSubmit: (data: TreinoFormData) => Promise<void>;
 };
@@ -42,7 +45,9 @@ type Props = {
 export default function TreinoForm({
     alunos,
     exercicios,
+    personais = [],
     currentPersonalId,
+    isAdminOrSuperAdmin = false,
     initialData,
     onSubmit,
 }: Props) {
@@ -186,7 +191,8 @@ export default function TreinoForm({
                             helperText={errors.nome?.message}
                         />
                     </Grid>
-                    <Grid size={12}> 
+
+                    <Grid size={{ xs: 12, md: isAdminOrSuperAdmin ? 6 : 12 }}> 
                         <Controller
                             control={control}
                             name="alunoId"
@@ -196,14 +202,16 @@ export default function TreinoForm({
                                     fullWidth
                                     label="Aluno"
                                     {...field}
+                                    value={field.value ?? 0}
+                                    onChange={(e) => field.onChange(Number(e.target.value))}
                                     error={!!errors.alunoId}
                                     helperText={errors.alunoId?.message}
                                 >
+                                    <MenuItem value={0} disabled>
+                                        Selecione um aluno
+                                    </MenuItem>
                                     {alunos.map((aluno) => (
-                                        <MenuItem
-                                            key={aluno.id}
-                                            value={aluno.id}
-                                        >
+                                        <MenuItem key={aluno.id} value={aluno.id}>
                                             {aluno.nome}
                                         </MenuItem>
                                     ))}
@@ -212,6 +220,35 @@ export default function TreinoForm({
                         />
                     </Grid>
 
+                    {isAdminOrSuperAdmin && (
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Controller
+                                control={control}
+                                name="personalId"
+                                render={({ field }) => (
+                                    <TextField
+                                        select
+                                        fullWidth
+                                        label="Personal Trainer"
+                                        {...field}
+                                        value={field.value ?? 0}
+                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                        error={!!errors.personalId}
+                                        helperText={errors.personalId?.message}
+                                    >
+                                        <MenuItem value={0} disabled>
+                                            Selecione um personal
+                                        </MenuItem>
+                                        {personais.map((personal) => (
+                                            <MenuItem key={personal.id} value={personal.id}>
+                                                {personal.nome}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                )}
+                            />
+                        </Grid>
+                    )}
                     <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth

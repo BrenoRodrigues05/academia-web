@@ -8,6 +8,7 @@ import TreinoForm from "./TreinoForm";
 
 import type { Treino } from "../types";
 import type { Aluno } from "@/features/alunos/types";
+import type { Personal } from "@/features/personais/types";
 import type { Exercicio } from "@/features/exercicios/types";
 import type { TreinoFormData } from "../validation/treinoSchema";
 
@@ -15,6 +16,8 @@ type Props = {
     open: boolean;
     treino?: Treino;
     alunos: Aluno[];
+    personais: Personal[];
+    isAdminOrSuperAdmin?: boolean;
     exercicios: Exercicio[];
     currentPersonalId: number; 
     onClose: () => void;
@@ -26,7 +29,9 @@ export default function TreinoDialog({
     treino,
     alunos,
     exercicios,
+    personais=[],
     currentPersonalId,
+    isAdminOrSuperAdmin = false,
     onClose,
     onSubmit,
 }: Props) {
@@ -50,7 +55,9 @@ export default function TreinoDialog({
                 <TreinoForm
                     alunos={alunos}
                     exercicios={exercicios}
+                    personais={personais}
                     currentPersonalId={currentPersonalId}
+                    isAdminOrSuperAdmin={isAdminOrSuperAdmin}
                     initialData={treino}
                     onSubmit={handleSubmit}
                 />

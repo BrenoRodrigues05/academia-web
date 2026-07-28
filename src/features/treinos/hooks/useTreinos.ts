@@ -206,6 +206,17 @@ export default function useTreinos() {
         }
     }
 
+    async function reatribuirPersonal(treinoId: number, novoPersonalId: number) {
+    try {
+        await TreinoService.reatribuirPersonal(treinoId, novoPersonalId);
+        showSuccess("Personal reatribuído com sucesso!");
+        clearSearch();
+        await crud.reload();
+    } catch {
+        showError("Erro ao reatribuir personal.");
+    }
+}
+
     async function remove(id: number) {
         try {
             await TreinoService.delete(id);
@@ -238,6 +249,7 @@ export default function useTreinos() {
         update,
         remove,
         alterarStatus,
+        reatribuirPersonal,
         notification,
         closeNotification,
     };
