@@ -14,6 +14,7 @@ import {
 type Props = {
     defaultValues?: Partial<PersonalSchema>;
     onSubmit: (data: PersonalSchema) => void;
+    isEditing?: boolean;
 };
 
 const sexoOptions = [
@@ -24,6 +25,7 @@ const sexoOptions = [
 export default function PersonalForm({
     defaultValues,
     onSubmit,
+    isEditing,
 }: Props) {
     const {
         control,
@@ -33,6 +35,8 @@ export default function PersonalForm({
         resolver: zodResolver(personalSchema),
         defaultValues,
     });
+
+    const isEditMode = isEditing ?? Boolean(defaultValues?.email);
 
     return (
         <form
@@ -80,6 +84,7 @@ export default function PersonalForm({
                                 {...field}
                                 label="E-mail"
                                 type="email"
+                                disabled={isEditMode}
                                 error={!!errors.email}
                                 helperText={errors.email?.message}
                             />
