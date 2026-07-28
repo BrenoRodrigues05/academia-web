@@ -10,6 +10,12 @@ type LastSearchState = {
   term: string;
 };
 
+interface ApiErrorResponse {
+  message?: string;
+  error?: string;
+  status?: number;
+}
+
 export default function useAlunos() {
   const crud = useCrud(AlunoService);
   const [searchResults, setSearchResults] = useState<Aluno[] | null>(null);
@@ -94,18 +100,24 @@ async function searchByEmail(email: string) {
     try {
       await AlunoService.create(data);
       showSuccess(
-
-      "Aluno cadastrado com sucesso! A senha padrão é Aluno@123. Não esqueça de comunicar ao usuário."
-
+        "Aluno cadastrado com sucesso! A senha padrão é Aluno@123. Não esqueça de comunicar ao usuário."
       );
       setSearchResults(null);
       await crud.reload();
     } catch (error) {
-      showError(
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      const errorMessage = axiosError.response?.data?.message || "";
 
-      "Erro ao cadastrar aluno."
+      if (
+        errorMessage.includes("já existe") || 
+        errorMessage.includes("restrição de unicidade") ||
+        errorMessage.includes("ukr8oo98o39ykr4hi57md9nibmw")
+      ) {
+        showError("Já existe um usuário cadastrado com este e-mail.");
+      } else {
+        showError("Erro ao cadastrar aluno. Verifique os dados informados.");
+      }
 
-      );
       throw error; 
     }
   }
@@ -162,7 +174,7 @@ async function searchByEmail(email: string) {
       await crud.reload();
     } catch (error) {
       showError(
-      "Erro ao remover aluno."
+      "Erro ao remover aluno. Não é possível excluir um aluno que possui uma matrícula ativa."
       );
     }
   }

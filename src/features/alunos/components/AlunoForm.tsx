@@ -17,6 +17,7 @@ import {
     type Props = {
     defaultValues?: Partial<AlunoSchema>;
     onSubmit: (data: AlunoSchema) => void;
+    isEditing?: boolean; 
     };
 
     const sexoOptions = [
@@ -27,6 +28,7 @@ import {
     export default function AlunoForm({
     defaultValues,
     onSubmit,
+    isEditing,
     }: Props) {
     const {
         control,
@@ -36,6 +38,8 @@ import {
         resolver: zodResolver(alunoSchema),
         defaultValues,
     });
+
+    const isEditMode = isEditing ?? Boolean(defaultValues?.email);
 
     return (
         <form
@@ -68,6 +72,7 @@ import {
                     {...field}
                     label="E-mail"
                     type="email"
+                    disabled={isEditMode}
                     error={!!errors.email}
                     helperText={errors.email?.message}
                 />
