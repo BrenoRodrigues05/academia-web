@@ -54,24 +54,24 @@ export default function ExerciciosPage() {
 
     function handleFechar() {
         if (!submitting) {
-            setDialogOpen(false);
-            setSelectedExercicio(null);
+        setDialogOpen(false);
+        setSelectedExercicio(null);
         }
     }
 
     async function handleSalvar(dataForm: ExercicioFormData) {
         setSubmitting(true);
         try {
-            if (selectedExercicio) {
-                await update(selectedExercicio.id, dataForm);
-            } else {
-                await create(dataForm);
-            }
-            handleFechar();
+        if (selectedExercicio) {
+            await update(selectedExercicio.id, dataForm);
+        } else {
+            await create(dataForm);
+        }
+        handleFechar();
         } catch (error) {
-            console.error("Erro ao salvar exercício:", error);
+        console.error("Erro ao salvar exercício:", error);
         } finally {
-            setSubmitting(false);
+        setSubmitting(false);
         }
     }
 
@@ -83,12 +83,12 @@ export default function ExerciciosPage() {
     async function confirmExcluir() {
         if (!exercicioTarget) return;
         try {
-            await remove(exercicioTarget.id);
+        await remove(exercicioTarget.id);
         } catch (error) {
-            console.error("Erro ao excluir exercício:", error);
+        console.error("Erro ao excluir exercício:", error);
         } finally {
-            setDeleteDialogOpen(false);
-            setExercicioTarget(null);
+        setDeleteDialogOpen(false);
+        setExercicioTarget(null);
         }
     }
 
@@ -100,158 +100,166 @@ export default function ExerciciosPage() {
 
     const filteredExercicios = rawList.filter((exercicio) => {
         const passaNome =
-            !searchTerm ||
-            exercicio.nome.toLowerCase().includes(searchTerm.toLowerCase());
+        !searchTerm ||
+        exercicio.nome.toLowerCase().includes(searchTerm.toLowerCase());
 
         const passaGrupo =
-            grupoMuscularFilter === "todos" ||
-            exercicio.grupoMuscular === grupoMuscularFilter;
+        grupoMuscularFilter === "todos" ||
+        exercicio.grupoMuscular === grupoMuscularFilter;
 
         return passaNome && passaGrupo;
     });
 
     const renderTableContent = () => {
         if (loading) {
-            return <AppLoading />;
+        return <AppLoading />;
         }
 
         if (!data) {
-            return (
-                <ErrorState
-                    message="Não foi possível carregar os exercícios."
-                    onRetry={reload}
-                />
-            );
+        return (
+            <ErrorState
+            message="Não foi possível carregar os exercícios."
+            onRetry={reload}
+            />
+        );
         }
 
         if (filteredExercicios.length === 0) {
-            return (
-                <EmptyState message="Nenhum exercício encontrado para os filtros selecionados." />
-            );
+        return (
+            <EmptyState message="Nenhum exercício encontrado para os filtros selecionados." />
+        );
         }
 
         return (
-            <ExercicioTable
-                exercicios={filteredExercicios}
-                onEdit={handleEditar}
-                onDelete={handleSolicitarExclusao}
-            />
+        <ExercicioTable
+            exercicios={filteredExercicios}
+            onEdit={handleEditar}
+            onDelete={handleSolicitarExclusao}
+        />
         );
     };
 
     return (
         <>
-            <LoadingOverlay open={submitting} />
+        <LoadingOverlay open={submitting} />
 
-            <CrudPage
-                toolbar={
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 2,
-                            width: "100%",
-                        }}
+        <CrudPage
+            toolbar={
+            <Box
+                sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                width: "100%",
+                }}
+            >
+                <Box sx={{ flexGrow: 1, width: "100%" }}>
+                <CrudToolbar
+                    title="Exercícios"
+                    subtitle="Gerenciamento da biblioteca de exercícios"
+                    createLabel="Novo Exercício"
+                    onCreate={handleNovo}
+                />
+                </Box>
+
+                <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 2,
+                    width: "100%",
+                    mt: -1,
+                    flexWrap: "wrap",
+                }}
+                >
+
+                <TextField
+                    size="small"
+                    label="Buscar por nome"
+                    variant="outlined"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    sx={{
+                    minWidth: 200,
+                    flex: { xs: "1 1 100%", sm: "1 1 200px" },
+                    }}
+                />
+
+
+                <FormControl
+                    size="small"
+                    sx={{
+                    minWidth: 160,
+                    flex: { xs: "1 1 100%", sm: "0 1 160px" },
+                    }}
+                >
+                    <InputLabel id="grupo-muscular-filter-label">
+                    Grupo Muscular
+                    </InputLabel>
+                    <Select
+                    labelId="grupo-muscular-filter-label"
+                    value={grupoMuscularFilter}
+                    label="Grupo Muscular"
+                    onChange={(e) =>
+                        setGrupoMuscularFilter(
+                        e.target.value as GrupoMuscular | "todos"
+                        )
+                    }
                     >
-                        <Box sx={{ flexGrow: 1, width: "100%" }}>
-                            <CrudToolbar
-                                title="Exercícios"
-                                subtitle="Gerenciamento da biblioteca de exercícios"
-                                createLabel="Novo Exercício"
-                                onCreate={handleNovo}
-                            />
-                        </Box>
+                    <MenuItem value="todos">
+                        Todos os grupos
+                    </MenuItem>
 
-                        <Box
-                            sx={{
-                                display: "flex",
-                                flexDirection: "row",
-                                gap: 2,
-                                width: "100%",
-                                mt: -1,
-                                flexWrap: "wrap",
-                            }}
-                        >
-                            <TextField
-                                size="small"
-                                label="Buscar por nome"
-                                variant="outlined"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                sx={{ minWidth: 220, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}
-                            />
-
-                            <FormControl
-                                size="small"
-                                sx={{ minWidth: 200, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}
-                            >
-                                <InputLabel id="grupo-muscular-filter-label">
-                                    Grupo Muscular
-                                </InputLabel>
-                                <Select
-                                    labelId="grupo-muscular-filter-label"
-                                    value={grupoMuscularFilter}
-                                    label="Grupo Muscular"
-                                    onChange={(e) =>
-                                        setGrupoMuscularFilter(
-                                            e.target.value as GrupoMuscular | "todos"
-                                        )
-                                    }
-                                >
-                                    <MenuItem value="todos">
-                                        Todos os grupos
-                                    </MenuItem>
-
-                                    {Object.values(GrupoMuscular).map((grupo) => (
-                                        <MenuItem key={grupo} value={grupo}>
-                                            {GrupoMuscularLabel[grupo]}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Box>
-                    </Box>
-                }
-                table={renderTableContent()}
-                pagination={
-                    !loading &&
-                    data &&
-                    filteredExercicios.length > 0 &&
-                    "totalPages" in data ? (
-                        <AppPagination
-                            page={page}
-                            totalPages={data.totalPages}
-                            totalElements={data.totalElements}
-                            onChange={setPage}
-                        />
-                    ) : undefined
-                }
-                dialogs={
-                    <ExercicioDialog
-                        open={dialogOpen}
-                        exercicio={selectedExercicio}
-                        onClose={handleFechar}
-                        onSubmit={handleSalvar}
-                    />
-                }
+                    {Object.values(GrupoMuscular).map((grupo) => (
+                        <MenuItem key={grupo} value={grupo}>
+                        {GrupoMuscularLabel[grupo]}
+                        </MenuItem>
+                    ))}
+                    </Select>
+                </FormControl>
+                </Box>
+            </Box>
+            }
+            table={renderTableContent()}
+            pagination={
+            !loading &&
+            data &&
+            filteredExercicios.length > 0 &&
+            "totalPages" in data ? (
+                <AppPagination
+                page={page}
+                totalPages={data.totalPages}
+                totalElements={data.totalElements}
+                onChange={setPage}
+                />
+            ) : undefined
+            }
+            dialogs={
+            <ExercicioDialog
+                open={dialogOpen}
+                exercicio={selectedExercicio}
+                onClose={handleFechar}
+                onSubmit={handleSalvar}
             />
+            }
+        />
 
-            <ConfirmDialog
-                open={deleteDialogOpen}
-                severity="error"
-                title="Excluir Exercício"
-                message={`Deseja realmente excluir o exercício "${exercicioTarget?.nome}"?`}
-                confirmText="Excluir"
-                onCancel={() => setDeleteDialogOpen(false)}
-                onConfirm={confirmExcluir}
-            />
+        <ConfirmDialog
+            open={deleteDialogOpen}
+            severity="error"
+            title="Excluir Exercício"
+            message={`Deseja realmente excluir o exercício "${exercicioTarget?.nome}"?`}
+            confirmText="Excluir"
+            onCancel={() => setDeleteDialogOpen(false)}
+            onConfirm={confirmExcluir}
+        />
 
-            <AppSnackbar
-                open={notification.open}
-                message={notification.message}
-                severity={notification.severity}
-                onClose={closeNotification}
-            />
+        <AppSnackbar
+            open={notification.open}
+            message={notification.message}
+            severity={notification.severity}
+            onClose={closeNotification}
+        />
         </>
     );
 }

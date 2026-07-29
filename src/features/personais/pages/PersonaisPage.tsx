@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material"; 
+import { Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, Box, TextField } from "@mui/material"; 
 
 import CrudPage from "@/components/crud/CrudPage";
 import {
@@ -133,18 +133,18 @@ import {
     };
 
     const filteredPersonais = (data && Array.isArray(data.content))
-    ? data.content.filter((personal) => {
-        const passaStatus = statusFilter === "todos" 
+        ? data.content.filter((personal) => {
+            const passaStatus = statusFilter === "todos" 
             ? true 
             : (personal.ativo ?? false) === (statusFilter === "ativos");
-        
-        const passaSexo = sexoFilter === "todos" 
+            
+            const passaSexo = sexoFilter === "todos" 
             ? true 
             : personal.sexo === sexoFilter;
 
-        return passaStatus && passaSexo;
+            return passaStatus && passaSexo;
         })
-    : [];
+        : [];
 
     const renderTableContent = () => {
         if (loading) {
@@ -184,22 +184,41 @@ import {
                 <CrudToolbar
                     title="Personais"
                     subtitle="Gerenciamento de personal trainers"
-                    searchPlaceholder={`Pesquisar por ${searchType.toUpperCase()}`}
                     createLabel="Novo Personal"
                     onCreate={handleCreateOpen} 
-                    onSearch={handleSearch}
                 />
                 </Box>
                 
-                <Box sx={{ 
-                display: "flex", 
-                flexDirection: "row", 
-                gap: 2,             
-                width: "100%", 
-                mt: -1,
-                flexWrap: "wrap"      
-                }}>
-                <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+                <Box 
+                sx={{ 
+                    display: "flex", 
+                    flexDirection: "row", 
+                    gap: 2,             
+                    width: "100%", 
+                    mt: -1,
+                    flexWrap: "wrap"      
+                }}
+                >
+
+                <TextField
+                    size="small"
+                    label={`Buscar por ${searchType}`}
+                    variant="outlined"
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    sx={{
+                    minWidth: 200,
+                    flex: { xs: "1 1 100%", sm: "1 1 200px" },
+                    }}
+                />
+
+                <FormControl 
+                    size="small" 
+                    sx={{ 
+                    minWidth: 150, 
+                    flex: { xs: "1 1 100%", sm: "0 1 150px" } 
+                    }}
+                >
                     <InputLabel id="search-type-label">Buscar por</InputLabel>
                     <Select
                     labelId="search-type-label"
@@ -213,12 +232,18 @@ import {
                     </Select>
                 </FormControl>
 
-                <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
-                    <InputLabel id="status-filter-label">Status do Usuário</InputLabel>
+                <FormControl 
+                    size="small" 
+                    sx={{ 
+                    minWidth: 160, 
+                    flex: { xs: "1 1 100%", sm: "0 1 160px" } 
+                    }}
+                >
+                    <InputLabel id="status-filter-label">Status</InputLabel>
                     <Select
                     labelId="status-filter-label"
                     value={statusFilter}
-                    label="Status do Usuário"
+                    label="Status"
                     onChange={(e) => setStatusFilter(e.target.value as StatusFilterType)}
                     >
                     <MenuItem value="todos">Todos</MenuItem>
@@ -227,7 +252,13 @@ import {
                     </Select>
                 </FormControl>
 
-                <FormControl size="small" sx={{ minWidth: 160, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+                <FormControl 
+                    size="small" 
+                    sx={{ 
+                    minWidth: 160, 
+                    flex: { xs: "1 1 100%", sm: "0 1 160px" } 
+                    }}
+                >
                     <InputLabel id="sexo-filter-label">Gênero</InputLabel>
                     <Select
                     labelId="sexo-filter-label"

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material"; 
+import { Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, Box, TextField } from "@mui/material"; 
 
 import CrudPage from "@/components/crud/CrudPage";
 import {
@@ -7,13 +7,9 @@ import {
   AppLoading,
 } from "@/components/ui";
 import {
-
-LoadingOverlay,
-
-EmptyState,
-
-ErrorState,
-
+  LoadingOverlay,
+  EmptyState,
+  ErrorState,
 } from "@/components/feedback";
 import { AlunoDialog, AlunoTable} from "../components";
 import CrudToolbar from "@/components/crud/CrudToolbar";
@@ -63,21 +59,20 @@ export default function AlunosPage() {
   const [idadeFilter, setIdadeFilter] = useState<IdadeFilterType>("todos");
 
   const calcularIdade = (dataNascimentoString: string | undefined): number => {
-  if (!dataNascimentoString) return 0;
-  
-  const hoje = new Date();
-  const nascimento = new Date(dataNascimentoString);
-  
-  let idade = hoje.getFullYear() - nascimento.getFullYear();
-  const mes = hoje.getMonth() - nascimento.getMonth();
-  
-  if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
-    idade--;
-  }
-  
-  return idade;
-};
-
+    if (!dataNascimentoString) return 0;
+    
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimentoString);
+    
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+    
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+      idade--;
+    }
+    
+    return idade;
+  };
 
   const handleCreateOpen = () => {
     setSelectedAluno(null);
@@ -140,6 +135,7 @@ export default function AlunosPage() {
       searchByEmail?.(texto); 
     }
   };
+
   const handleSearchTypeChange = (novoTipo: "nome" | "email") => {
     setSearchType(novoTipo);
     if (searchQuery.trim()) {
@@ -211,22 +207,40 @@ export default function AlunosPage() {
               <CrudToolbar
                 title="Alunos"
                 subtitle="Gerenciamento de alunos"
-                searchPlaceholder={`Pesquisar por ${searchType}`}
                 createLabel="Novo Aluno"
                 onCreate={handleCreateOpen} 
-                onSearch={handleSearch}
               />
             </Box>
             
-            <Box sx={{ 
-              display: "flex", 
-              flexDirection: "row", 
-              gap: 2,             
-              width: "100%", 
-              mt: -1,
-              flexWrap: "wrap"      
-            }}>
-              <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+            <Box 
+              sx={{ 
+                display: "flex", 
+                flexDirection: "row", 
+                gap: 2,             
+                width: "100%", 
+                mt: -1,
+                flexWrap: "wrap"      
+              }}
+            >
+              <TextField
+                size="small"
+                label={`Buscar por ${searchType}`}
+                variant="outlined"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                sx={{
+                  minWidth: 200,
+                  flex: { xs: "1 1 100%", sm: "1 1 200px" },
+                }}
+              />
+
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  minWidth: 150, 
+                  flex: { xs: "1 1 100%", sm: "0 1 150px" } 
+                }}
+              >
                 <InputLabel id="search-type-label">Buscar por</InputLabel>
                 <Select
                   labelId="search-type-label"
@@ -238,12 +252,19 @@ export default function AlunosPage() {
                   <MenuItem value="email">E-mail</MenuItem>
                 </Select>
               </FormControl>
-              <FormControl size="small" sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
-                <InputLabel id="status-filter-label">Status do Usuário</InputLabel>
+
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  minWidth: 160, 
+                  flex: { xs: "1 1 100%", sm: "0 1 160px" } 
+                }}
+              >
+                <InputLabel id="status-filter-label">Status</InputLabel>
                 <Select
                   labelId="status-filter-label"
                   value={statusFilter}
-                  label="Status do Usuário"
+                  label="Status"
                   onChange={(e) => setStatusFilter(e.target.value as StatusFilterType)}
                 >
                   <MenuItem value="todos">Todos</MenuItem>
@@ -251,7 +272,14 @@ export default function AlunosPage() {
                   <MenuItem value="inativos">Inativos</MenuItem>
                 </Select>
               </FormControl>
-              <FormControl size="small" sx={{ minWidth: 160, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  minWidth: 160, 
+                  flex: { xs: "1 1 100%", sm: "0 1 160px" } 
+                }}
+              >
                 <InputLabel id="sexo-filter-label">Gênero</InputLabel>
                 <Select
                   labelId="sexo-filter-label"
@@ -265,7 +293,13 @@ export default function AlunosPage() {
                 </Select>
               </FormControl>
 
-              <FormControl size="small" sx={{ minWidth: 150, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}>
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  minWidth: 160, 
+                  flex: { xs: "1 1 100%", sm: "0 1 160px" } 
+                }}
+              >
                 <InputLabel id="idade-filter-label">Idade</InputLabel>
                 <Select
                   labelId="idade-filter-label"

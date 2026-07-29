@@ -26,11 +26,11 @@ export default function TreinoPage() {
     const { user } = useAuth();
 
     const isAdminOrSuperAdmin = Boolean(
-    user?.role && [
-        "SUPER_ADMIN", 
-        "ADMIN"
-    ].includes(user.role)
-);
+        user?.role && [
+            "SUPER_ADMIN", 
+            "ADMIN"
+        ].includes(user.role)
+    );
 
     const { data: personaisData } = usePersonais(); 
     const personais = personaisData?.content ?? (Array.isArray(personaisData) ? personaisData : []);
@@ -50,6 +50,8 @@ export default function TreinoPage() {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [alunoFilter, setAlunoFilter] = useState<string>("todos");
+    const [personalFilter, setPersonalFilter] = useState<string>("todos");
+    const [statusFilter, setStatusFilter] = useState<string>("todos");
 
     useEffect(() => {
         alunoHook.reload();
@@ -134,12 +136,24 @@ export default function TreinoPage() {
             treino.nome?.toLowerCase().includes(searchTerm.trim().toLowerCase());
 
         const alunoIdTreino = treino.aluno?.id ?? (treino as any).alunoId;
-
         const passaAluno =
             alunoFilter === "todos" ||
             String(alunoIdTreino) === String(alunoFilter);
 
-        return passaNome && passaAluno;
+        const personalIdTreino = treino.personal?.id ?? (treino as any).personalId;
+        const passaPersonal =
+            personalFilter === "todos" ||
+            String(personalIdTreino) === String(personalFilter);
+
+        const statusTreino = treino.ativo !== undefined 
+            ? (treino.ativo ? "ativo" : "inativo")
+            : (treino as any).status?.toLowerCase();
+
+        const passaStatus =
+            statusFilter === "todos" ||
+            statusTreino === statusFilter;
+
+        return passaNome && passaAluno && passaPersonal && passaStatus;
     });
 
     const renderTableContent = () => {
@@ -217,16 +231,16 @@ export default function TreinoPage() {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 sx={{
-                                    minWidth: 220,
-                                    flex: { xs: "1 1 100%", sm: "0 1 auto" },
+                                    minWidth: 200,
+                                    flex: { xs: "1 1 100%", sm: "1 1 200px" },
                                 }}
                             />
 
                             <FormControl
                                 size="small"
                                 sx={{
-                                    minWidth: 200,
-                                    flex: { xs: "1 1 100%", sm: "0 1 auto" },
+                                    minWidth: 180,
+                                    flex: { xs: "1 1 100%", sm: "1 1 180px" },
                                 }}
                             >
                                 <InputLabel id="aluno-filter-label">Aluno</InputLabel>
@@ -242,6 +256,49 @@ export default function TreinoPage() {
                                             {aluno.nome}
                                         </MenuItem>
                                     ))}
+                                </Select>
+                            </FormControl>
+
+                            <FormControl
+                                size="small"
+                                sx={{
+                                    minWidth: 180,
+                                    flex: { xs: "1 1 100%", sm: "1 1 180px" },
+                                }}
+                            >
+                                <InputLabel id="personal-filter-label">Personal</InputLabel>
+                                <Select
+                                    labelId="personal-filter-label"
+                                    value={personalFilter}
+                                    label="Personal"
+                                    onChange={(e) => setPersonalFilter(String(e.target.value))}
+                                >
+                                    <MenuItem value="todos">Todos os personais</MenuItem>
+                                    {personais.map((personal: any) => (
+                                        <MenuItem key={personal.id} value={String(personal.id)}>
+                                            {personal.nome}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            <FormControl
+                                size="small"
+                                sx={{
+                                    minWidth: 140,
+                                    flex: { xs: "1 1 100%", sm: "0 1 140px" },
+                                }}
+                            >
+                                <InputLabel id="status-filter-label">Status</InputLabel>
+                                <Select
+                                    labelId="status-filter-label"
+                                    value={statusFilter}
+                                    label="Status"
+                                    onChange={(e) => setStatusFilter(String(e.target.value))}
+                                >
+                                    <MenuItem value="todos">Todos</MenuItem>
+                                    <MenuItem value="ativo">Ativos</MenuItem>
+                                    <MenuItem value="inativo">Inativos</MenuItem>
                                 </Select>
                             </FormControl>
                         </Box>
