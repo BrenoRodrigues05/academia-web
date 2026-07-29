@@ -12,6 +12,12 @@ type LastSearchState = {
     term: string;
 };
 
+interface ApiErrorResponse {
+    message?: string;
+    error?: string;
+    status?: number;
+}
+
 export default function useExercicios() {
 
     const crud = useCrud(ExercicioService);
@@ -108,16 +114,20 @@ export default function useExercicios() {
             await crud.reload();
 
         } catch (error) {
-
-            showError(
-                "Erro ao cadastrar exercício."
-            );
-
-            throw error;
-
+                    const axiosError = error as AxiosError<ApiErrorResponse>;
+                            const errorMessage = axiosError.response?.data?.message || "";
+                        
+                            if (
+                                errorMessage.includes("Já existe") 
+                            ) {
+                                showError("Já existe um exercício cadastrado com este nome.");
+                            } else {
+                                showError("Erro ao cadastrar Exercício. Verifique os dados informados.");
+                            }
+                        
+                            throw error; 
+                        }
         }
-
-    }
 
     async function update(
         id: number,

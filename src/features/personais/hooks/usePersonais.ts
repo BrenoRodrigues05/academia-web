@@ -10,6 +10,12 @@ type LastSearchState = {
     term: string;
 };
 
+interface ApiErrorResponse {
+    message?: string;
+    error?: string;
+    status?: number;
+}
+
 export default function usePersonais() {
     const crud = useCrud(PersonalService);
     const { notification, showSuccess, showError, closeNotification } = useNotification();
@@ -132,10 +138,22 @@ export default function usePersonais() {
             setSearchResults(null);
             await crud.reload();
         } catch (error) {
-            showError("Erro ao cadastrar personal. Tente novamente.");
-            throw error; 
-        }
-    }
+            const axiosError = error as AxiosError<ApiErrorResponse>;
+                    const errorMessage = axiosError.response?.data?.message || "";
+                
+                    if (
+                        errorMessage.includes("já existe") || 
+                        errorMessage.includes("restrição de unicidade") ||
+                        errorMessage.includes("ukr8oo98o39ykr4hi57md9nibmw")
+                    ) {
+                        showError("Já existe um usuário cadastrado com este e-mail.");
+                    } else {
+                        showError("Erro ao cadastrar Personal. Verifique os dados informados.");
+                    }
+                
+                    throw error; 
+                }
+}
 
     async function update(id: number, data: unknown) {
         try {
