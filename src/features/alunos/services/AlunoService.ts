@@ -12,6 +12,14 @@ extends BaseCrudService<Aluno> {
 
     }
 
+    async meuPerfil(): Promise<Aluno> {
+    const response = await api.get<Aluno>(
+        `${this.endpoint}/me`
+    );
+
+    return response.data;
+}
+
     async findByNome(nome: string): Promise<Aluno[]> {
     const response = await api.get<Aluno[]>(`${this.endpoint}/busca-nome`, {
         params: { nome }

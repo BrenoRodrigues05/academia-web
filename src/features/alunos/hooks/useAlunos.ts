@@ -27,6 +27,10 @@ export default function useAlunos() {
 
   const { notification, showSuccess, showError, closeNotification } = useNotification();
 
+  async function meuPerfil(): Promise<Aluno> {
+    return await AlunoService.meuPerfil();
+}
+
   async function searchByNome(nome: string) {
   const termoFormatado = nome.trim();
 
@@ -186,6 +190,7 @@ async function searchByEmail(email: string) {
       : crud.data,
     loading: crud.loading || searchLoading,
     isSearching: searchResults !== null,
+    meuPerfil,
     searchByNome,
     searchByEmail,
     create,
