@@ -22,12 +22,17 @@ const drawerWidth = 240;
 export default function Sidebar({ mobileOpen, onClose, isMobile }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth(); 
+  const { user, logout } = useAuth(); 
 
   const handleLogout = () => {
     logout(); 
-    navigate("/login"); 
+    navigate("/"); 
   };
+
+  const filteredMenuItems = menuItems.filter((item) => {
+    if (!item.roles) return true; 
+    return user?.role ? item.roles.includes(user.role) : false;
+  });
 
   return (
     <Drawer
@@ -44,7 +49,7 @@ export default function Sidebar({ mobileOpen, onClose, isMobile }: SidebarProps)
       <Toolbar />
 
       <List>
-        {menuItems.map((item) => (
+        {filteredMenuItems.map((item) => (
           <ListItemButton
             key={item.path}
             component={Link}
