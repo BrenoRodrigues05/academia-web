@@ -16,15 +16,20 @@ import usePersonais from "@/features/personais/hooks/usePersonais";
 import TreinoDialog from "../components/TreinoDialog";
 import TreinoTable from "../components/TreinoTable";
 import ReatribuirPersonalDialog from "../components/ReatribuirPersonalDialog";
+import AlunoTreinoView from "../components/AlunoTreinoView"; // 👈 NOVO IMPORT
 
 import type { Treino } from "../types";
 import type { TreinoFormData } from "../validation/treinoSchema";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { UserRole } from "@/shared/enums/UserRole"; 
 
 export default function TreinoPage() {
     const { user } = useAuth();
 
+    if (user?.role === UserRole.ALUNO) {
+        return <AlunoTreinoView />;
+    }
     const isAdminOrSuperAdmin = Boolean(
         user?.role && [
             "SUPER_ADMIN", 

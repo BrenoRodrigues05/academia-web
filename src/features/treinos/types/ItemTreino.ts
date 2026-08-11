@@ -12,4 +12,10 @@ export interface ItemTreino {
 
     exercicio: Exercicio;
 
+    treinoId?: number;
+    
+    exercicioId?: number;
+
+    nomeExercicio: string;
+
 }
