@@ -1,46 +1,55 @@
 import {
-Card,
-CardContent,
-Stack,
-Typography,
-} from "@mui/material";
+    Button,
+    Card,
+    CardContent,
+    Stack,
+    Typography,
+    } from "@mui/material";
 
-type Props = {
-title: string;
-value: number;
-icon: React.ReactNode;
-};
+    type Props = {
+    title: string;
+    value?: string | number;
+    icon: React.ReactNode;
+    onClick?: () => void;
+    buttonText?: string;
+    };
 
-export default function DashboardCard({
-title,
-value,
-icon,
-}: Props) {
-return (
-<Card>
-<CardContent>
-<Stack spacing={2}>
+    export default function DashboardCard({
+    title,
+    value,
+    icon,
+    onClick,
+    buttonText,
+    }: Props) {
+    return (
+        <Card sx={{ height: "100%" }}>
+        <CardContent>
+            <Stack spacing={2} sx={{ alignItems: "flex-start" }}>
+            {icon}
 
-{icon}
+            <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
+                {title}
+            </Typography>
 
-<Typography variant="h6">
+            {buttonText || onClick ? (
+                <Button
+                variant="contained"
+                color="primary"
+                onClick={onClick}
+                sx={{ textTransform: "none", fontWeight: "bold" }}
+                >
+                {buttonText ?? value}
+                </Button>
+            ) : (
 
-{title}
-
-</Typography>
-
-<Typography variant="h3">
-
-{value}
-
-</Typography>
-
-</Stack>
-
-</CardContent>
-
-</Card>
-
-);
-
+                value !== undefined && (
+                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                    {value}
+                </Typography>
+                )
+            )}
+            </Stack>
+        </CardContent>
+        </Card>
+    );
 }
