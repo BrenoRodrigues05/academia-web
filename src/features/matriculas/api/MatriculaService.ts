@@ -29,6 +29,11 @@ class MatriculaService extends BaseCrudService<Matricula> {
         return PlanoService.findAll();
     }
 
+    async getMeuPlano() {
+        const response = await api.get(`${this.endpoint}/me`);
+        return response.data;
+    }
+
     async findByAluno(id: number) {
         const response = await api.get(`${this.endpoint}/aluno/${id}`);
         return response.data;

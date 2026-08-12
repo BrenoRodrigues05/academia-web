@@ -20,10 +20,18 @@ import {
     import { TipoPlano } from "@/shared/enums/TipoPlano";
     import { PlanoDialog, PlanoTable } from "../components";
 
+    import { useAuth } from "@/features/auth/hooks/useAuth";
+    import { UserRole } from "@/shared/enums/UserRole";
+    import AlunoPlanoView from "../components/AlunoPlanoView";
+
     type TipoFilterType = "todos" | TipoPlano;
     type ValorRangeType = "todos" | "0-50" | "50-100" | "100-200" | "200+";
 
     export default function PlanosPage() {
+    const { user } = useAuth();
+    if (user?.role === UserRole.ALUNO) {
+    return <AlunoPlanoView />;
+}
     const {
         data,
         loading,
