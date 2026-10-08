@@ -8,40 +8,37 @@ import {
   Stack,
   TextField,
   Typography,
+  IconButton,
+  InputAdornment,
+  Link,
 } from "@mui/material";
 
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-
-import {
-  IconButton,
-  InputAdornment,
-} from "@mui/material";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 
 export default function LoginPage() {
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const { login: signIn } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-  try {
-    setLoading(true);
-    setError("");
+    try {
+      setLoading(true);
+      setError("");
 
-    await signIn({login, senha});
-    navigate("/dashboard");
-
-  } catch {
-    setError("Login ou senha inválidos.");
-  } finally {
-    setLoading(false);
-  }
-};
+      await signIn({ login, senha });
+      navigate("/dashboard");
+    } catch {
+      setError("Login ou senha inválidos.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Container maxWidth="sm">
@@ -60,11 +57,7 @@ export default function LoginPage() {
             borderRadius: 3,
           }}
         >
-          <Typography
-            variant="h4"
-            align="center"
-            gutterBottom
-          >
+          <Typography variant="h4" align="center" gutterBottom>
             Academia Web
           </Typography>
 
@@ -72,7 +65,7 @@ export default function LoginPage() {
             variant="body2"
             color="text.secondary"
             align="center"
-            sx={{ mb: 4 }} 
+            sx={{ mb: 4 }}
           >
             Faça login para acessar o sistema.
           </Typography>
@@ -81,9 +74,7 @@ export default function LoginPage() {
             <TextField
               label="Login"
               value={login}
-              onChange={(e) =>
-                setLogin(e.target.value)
-              }
+              onChange={(e) => setLogin(e.target.value)}
               fullWidth
             />
 
@@ -98,16 +89,10 @@ export default function LoginPage() {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
+                        onClick={() => setShowPassword(!showPassword)}
                         edge="end"
                       >
-                        {showPassword ? (
-                          <VisibilityOff />
-                        ) : (
-                          <Visibility />
-                        )}
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -115,12 +100,9 @@ export default function LoginPage() {
               }}
             />
             {error && (
-                <Typography
-                    color="error"
-                    variant="body2"
-                >
-                    {error}
-                </Typography>
+              <Typography color="error" variant="body2">
+                {error}
+              </Typography>
             )}
 
             <Button
@@ -129,13 +111,25 @@ export default function LoginPage() {
               fullWidth
               onClick={handleLogin}
               disabled={
-                  loading ||
-                  login.trim() === "" ||
-                  senha.trim() === ""
+                loading || login.trim() === "" || senha.trim() === ""
               }
-          >
+            >
               {loading ? "Entrando..." : "Entrar"}
-          </Button>
+            </Button>
+
+            <Box sx={{ textAlign: "center", mt: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                Ainda não tem uma conta?{" "}
+                <Link
+                  component={RouterLink}
+                  to="/register"
+                  underline="hover"
+                  sx={{ fontWeight: "bold" }}
+                >
+                  Cadastre-se aqui
+                </Link>
+              </Typography>
+            </Box>
           </Stack>
         </Paper>
       </Box>
