@@ -1,5 +1,6 @@
 import api from "@/api/axios";
 import { ENDPOINTS } from "@/api/endpoints";
+import type { RegisterAlunoData, RegisterPixResponse } from "../types/types";
 
 import type {
     LoginRequest,
@@ -18,6 +19,11 @@ class AuthService {
 
         return response.data;
 
+    }
+
+    async register(data: RegisterAlunoData): Promise<RegisterPixResponse> {
+    const response = await api.post<RegisterPixResponse>("/auth/register", data);
+    return response.data;
     }
 
 }

@@ -46,15 +46,16 @@ import type {
         }
     }
 
-    async function create(data: MatriculaCreate) {
+    async function create(data: MatriculaCreate): Promise<Matricula>{
         try {
-        await MatriculaService.create(data);
-        showSuccess("Matrícula cadastrada com sucesso!");
+        const response = await MatriculaService.create(data);
+        showSuccess("Matrícula gerada! Aguardando pagamento.");
         await crud.reload();
-        } catch (error) {
+        return response; 
+    } catch (error) {
         showError("Erro ao cadastrar matrícula.");
         throw error;
-        }
+    }
     }
 
     async function update(idMatricula: number, data: MatriculaUpdate) {

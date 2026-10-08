@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserRole } from "@/shared/enums/UserRole";
 
 import LoginPage from "../features/auth/pages/LoginPage";
+import RegisterPage from "@/features/auth/pages/RegisterPage";
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
 import ProtectedRoute from "./ProtectedRoute";
@@ -25,6 +26,16 @@ export default function AppRoutes() {
                 </PublicRoute>
             }
             />
+
+        <Route
+                        path="/register"
+                        element={
+                            <PublicRoute>
+                            <RegisterPage />
+                            </PublicRoute>
+                        }
+                        />
+
             <Route
             path="/dashboard"
             element={

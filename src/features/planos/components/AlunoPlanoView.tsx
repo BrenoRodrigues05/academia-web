@@ -20,6 +20,11 @@ import {
     import CheckCircleIcon from "@mui/icons-material/CheckCircle";
     import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
     import StarIcon from "@mui/icons-material/Star";
+    import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+    import QrCode2Icon from "@mui/icons-material/QrCode2";
+    import TextField from "@mui/material/TextField";
+    import IconButton from "@mui/material/IconButton";
+    import Tooltip from "@mui/material/Tooltip";
 
     import MainLayout from "@/layouts/MainLayout";
     import { AppPageHeader, AppLoading } from "@/components/ui";
@@ -34,6 +39,12 @@ import {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+
+    const [pixModalData, setPixModalData] = useState<{
+    qrCodeBase64?: string;
+    pixCopiaECola?: string;
+    } | null>(null);
+    const [copied, setCopied] = useState(false);
 
     const [openCancelModal, setOpenCancelModal] = useState(false);
     const [planoSelecionado, setPlanoSelecionado] = useState<any | null>(null);
@@ -52,6 +63,14 @@ import {
         const data = await MatriculaService.getMeuPlano();
         setMatricula(data);
         const matriculaAtiva = Boolean(data?.ativa ?? data?.ativo);
+
+        if (data?.qrCodeBase64 || data?.pixCopiaECola) {
+        setPixModalData({
+        qrCodeBase64: data.qrCodeBase64,
+        pixCopiaECola: data.pixCopiaECola,
+        });
+    }
+
         if (!matriculaAtiva) {
             await buscarPlanosDisponiveis();
         }
@@ -96,26 +115,43 @@ import {
         }
     };
 
-    const handleContratarPlano = async () => {
+        const handleContratarPlano = async () => {
         if (!planoSelecionado) return;
         setActionLoading(true);
         try {
-        if (matricula && !isAtiva) {
-            await MatriculaService.editarPlano(matricula.id, planoSelecionado.id);
-            await MatriculaService.alterarStatus(matricula.id, true);
-        } else {
-            await MatriculaService.create({ planoId: planoSelecionado.id });
-        }
+            let response;
+            if (matricula && !isAtiva) {
+            response = await MatriculaService.editarPlano(matricula.id, planoSelecionado.id);
+            } else {
+            response = await MatriculaService.create({ 
+                planoId: planoSelecionado.id 
+            });
+            }
 
-        setOpenContratarModal(false);
-        setPlanoSelecionado(null);
-        carregarDados(); 
+            setOpenContratarModal(false);
+            setPlanoSelecionado(null);
+
+            if (response?.qrCodeBase64 || response?.pixCopiaECola) {
+            setPixModalData({
+                qrCodeBase64: response.qrCodeBase64,
+                pixCopiaECola: response.pixCopiaECola,
+            });
+            }
+
+            carregarDados();
         } catch (err) {
-        console.error("Erro ao contratar plano:", err);
+            console.error("Erro ao contratar plano:", err);
         } finally {
-        setActionLoading(false);
+            setActionLoading(false);
         }
-    };
+        };
+        const handleCopyPix = () => {
+        if (pixModalData?.pixCopiaECola) {
+            navigator.clipboard.writeText(pixModalData.pixCopiaECola);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2500);
+        }
+        };
 
     return (
         <MainLayout>
@@ -149,7 +185,18 @@ import {
                 >
                 <strong>Sua assinatura do plano ({matricula?.plano?.nome ?? matricula?.nomePlano}) está inativa ou foi cancelada.</strong> Escolha um plano abaixo para reativar seu acesso à academia.
                 </Alert>
-            )}
+                )}{pixModalData && (
+                    <Box sx={{ textAlign: "center", mb: 3 }}>
+                        <Button
+                        variant="outlined"
+                        color="secondary"
+                        startIcon={<QrCode2Icon />}
+                        onClick={() => setPixModalData(pixModalData)}
+                        >
+                        Visualizar QR Code Pix Pendente
+                        </Button>
+                    </Box>
+                )}
 
             <Typography variant="h5" sx={{ fontWeight: "bold", mb: 3, textAlign: "center" }}>
                 Planos Disponíveis
@@ -332,6 +379,58 @@ import {
                 {actionLoading ? "Processando..." : "Confirmar e Assinar"}
             </Button>
             </DialogActions>
+        </Dialog>
+
+        <Dialog open={Boolean(pixModalData)} onClose={() => setPixModalData(null)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
+            Pagamento via Pix
+        </DialogTitle>
+        <DialogContent sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+            <DialogContentText sx={{ textAlign: "center" }}>
+                Escaneie o QR Code abaixo no app do seu banco ou copie a chave Pix para concluir o pagamento:
+                </DialogContentText>
+
+            {pixModalData?.qrCodeBase64 && (
+            <Box
+                component="img"
+                src={
+                pixModalData.qrCodeBase64.startsWith("data:image")
+                    ? pixModalData.qrCodeBase64
+                    : `data:image/png;base64,${pixModalData.qrCodeBase64}`
+                }
+                alt="QR Code Pix"
+                sx={{ width: 220, height: 220, border: "1px solid #eee", borderRadius: 2 }}
+            />
+            )}
+
+            {pixModalData?.pixCopiaECola && (
+            <Box sx={{ width: "100%", mt: 1 }}>
+                <TextField
+                fullWidth
+                size="small"
+                label="Código Pix Copia e Cola"
+                value={pixModalData.pixCopiaECola}
+                slotProps={{
+                    input: {
+                    readOnly: true,
+                    endAdornment: (
+                        <Tooltip title={copied ? "Copiado!" : "Copiar"}>
+                        <IconButton onClick={handleCopyPix} edge="end" color={copied ? "success" : "default"}>
+                            <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                        </Tooltip>
+                    ),
+                    },
+                }}
+                />
+            </Box>
+            )}
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+            <Button variant="contained" onClick={() => setPixModalData(null)}>
+            Concluído
+            </Button>
+        </DialogActions>
         </Dialog>
 
         <Dialog open={openCancelModal} onClose={() => setOpenCancelModal(false)}>

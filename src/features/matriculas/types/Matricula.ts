@@ -7,6 +7,14 @@ export interface Matricula {
 
     ativa: boolean;
 
+    planoId: number;
+    
+    pagamentoId: number;
+
+    pixCopiaECola: string;
+
+    qrCodeBase64: string;
+
     aluno: Aluno;
 
     plano: Plano;
