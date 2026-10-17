@@ -16,7 +16,7 @@ import usePersonais from "@/features/personais/hooks/usePersonais";
 import TreinoDialog from "../components/TreinoDialog";
 import TreinoTable from "../components/TreinoTable";
 import ReatribuirPersonalDialog from "../components/ReatribuirPersonalDialog";
-import AlunoTreinoView from "../components/AlunoTreinoView"; // 👈 NOVO IMPORT
+import AlunoTreinoView from "../components/AlunoTreinoView"; 
 
 import type { Treino } from "../types";
 import type { TreinoFormData } from "../validation/treinoSchema";

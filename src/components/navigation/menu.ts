@@ -21,6 +21,12 @@ export const menuItems: MenuItem[] = [
     icon: DashboardIcon,
   },
   {
+    label: "Produtos",
+    path: "/produtos",
+    icon: WorkspacePremiumIcon,
+    roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN],
+  },
+  {
     label: "Alunos",
     path: "/alunos",
     icon: SchoolIcon,

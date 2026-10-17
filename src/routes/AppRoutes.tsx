@@ -13,6 +13,7 @@ import PlanosPage from "@/features/planos/pages/PlanosPage";
 import MatriculasPage from "@/features/matriculas/pages/MatriculasPage";
 import ExerciciosPage from "@/features/exercicios/pages/ExerciciosPage";
 import TreinosPage from "@/features/treinos/pages/TreinosPage";
+import ProdutoPage from "@/features/loja/pages/ProdutoPage";
 
 export default function AppRoutes() {
     return (
@@ -41,6 +42,15 @@ export default function AppRoutes() {
             element={
                 <ProtectedRoute>
                 <DashboardPage />
+                </ProtectedRoute>
+            }
+            />
+
+            <Route
+            path="/produtos"
+            element={
+                <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN, UserRole.ADMIN]}>
+                <ProdutoPage />
                 </ProtectedRoute>
             }
             />
