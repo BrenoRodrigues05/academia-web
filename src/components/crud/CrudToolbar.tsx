@@ -16,7 +16,7 @@ type Props = {
   subtitle: string;
   searchPlaceholder?: string; 
   onSearch?: (value: string) => void; 
-  onCreate: () => void;
+  onCreate?: () => void;
   createLabel?: string;
   actions?: ReactNode;
 };
@@ -36,9 +36,11 @@ export default function CrudToolbar({
         title={title}
         subtitle={subtitle}
         action={
-          <AppButton onClick={onCreate}>
-            {createLabel}
-          </AppButton>
+          onCreate ?  (
+            <AppButton onClick={onCreate}>
+              {createLabel}
+            </AppButton>
+          ) : undefined
         }
       />
 
