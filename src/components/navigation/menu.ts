@@ -4,6 +4,7 @@ import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import SportsGymnasticsIcon from "@mui/icons-material/SportsGymnastics";
+import AddCardIcon from '@mui/icons-material/AddCard';
 import LogoutIcon from "@mui/icons-material/Logout";
 import { UserRole } from "@/shared/enums/UserRole";
 
@@ -49,6 +50,12 @@ export const menuItems: MenuItem[] = [
     path: "/planos",
     icon: WorkspacePremiumIcon,
     roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PERSONAL, UserRole.ALUNO],
+  },
+  {
+    label: "Loja",
+    path: "/loja",
+    icon: AddCardIcon,
+    roles: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ALUNO],
   },
   {
     label: "Treinos",

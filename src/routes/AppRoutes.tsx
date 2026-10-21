@@ -14,6 +14,7 @@ import MatriculasPage from "@/features/matriculas/pages/MatriculasPage";
 import ExerciciosPage from "@/features/exercicios/pages/ExerciciosPage";
 import TreinosPage from "@/features/treinos/pages/TreinosPage";
 import ProdutoPage from "@/features/loja/pages/ProdutoPage";
+import LojaView from "@/features/loja/pages/LojaView";
 
 export default function AppRoutes() {
     return (
@@ -78,6 +79,15 @@ export default function AppRoutes() {
             element={
                 <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.PERSONAL, UserRole.ALUNO]}>
                 <PlanosPage />
+                </ProtectedRoute>
+            }
+            />
+
+            <Route
+            path="/loja"
+            element={
+                <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.ALUNO]}>
+                <LojaView />
                 </ProtectedRoute>
             }
             />
