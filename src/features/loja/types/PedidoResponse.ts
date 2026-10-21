@@ -3,5 +3,5 @@ export interface PedidoResponse {
     valorTotal: number;
     status: string;
     metodoPagamento: string;
-    dataCriacao: string;
+    createdAt: string;
     }
