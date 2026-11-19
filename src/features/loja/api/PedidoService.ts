@@ -13,6 +13,23 @@ class PedidoService {
         const response = await api.get<PedidoResponse[]>(`${this.endpoint}/meus-pedidos`);
         return response.data;
     }
+
+    async atualizarStatusPedido(id: number, novoStatus: string): Promise<PedidoResponse> {
+        const response = await api.patch<PedidoResponse>(
+            `${this.endpoint}/${id}/status-pedido`,
+            null,
+            { params: { status: novoStatus } }
+        );
+        return response.data;
+    }
+
+    async BuscarPedidoDoAluno(nomeAluno: string): Promise<PedidoResponse[]> {
+        const response = await api.get<PedidoResponse[]>(
+            `${this.endpoint}/busca-nome-aluno`,
+            { params: { nome: nomeAluno.trim() } }
+        );
+        return response.data;
+    }
 }
 
 export default new PedidoService();
