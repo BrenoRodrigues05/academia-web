@@ -1,12 +1,40 @@
-import { useState, useEffect } from "react";
-import MatriculaService from "../api/MatriculaService";
-import type { Matricula } from "../types";
+import { useState, useEffect, useRef } from "react";
+import {
+    Box,
+    Button,
+    Chip,
+    Dialog,
+    DialogContent,
+    Typography,
+    alpha,
+    keyframes,
+    } from "@mui/material";
+    import {
+    CheckCircleOutlined,
+    ContentCopy,
+    HourglassBottom,
+    Pix,
+    TimerOutlined,
+    } from "@mui/icons-material";
+    import MatriculaService from "../api/MatriculaService";
+    import type { Matricula } from "../types";
 
-interface PixPaymentModalProps {
+    interface PixPaymentModalProps {
     matriculaData: Matricula & { dataExpiracao?: string };
     onClose: () => void;
     onSuccess: () => void;
     }
+
+    const pulseDot = keyframes`
+    0%   { box-shadow: 0 0 0 0 rgba(198,255,61,0.6); }
+    70%  { box-shadow: 0 0 0 10px rgba(198,255,61,0); }
+    100% { box-shadow: 0 0 0 0 rgba(198,255,61,0); }
+    `;
+
+    const blink = keyframes`
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.5; }
+    `;
 
     export function PixPaymentModal({
     matriculaData,
@@ -14,9 +42,13 @@ interface PixPaymentModalProps {
     onSuccess,
     }: PixPaymentModalProps) {
     const [copied, setCopied] = useState(false);
-    const [, setIsVerifying] = useState(false);
     const [timeLeft, setTimeLeft] = useState<number>(0);
     const [isExpired, setIsExpired] = useState<boolean>(false);
+
+    const onSuccessRef = useRef(onSuccess);
+    useEffect(() => {
+        onSuccessRef.current = onSuccess;
+    }, [onSuccess]);
 
     useEffect(() => {
         let targetTime: number;
@@ -53,11 +85,15 @@ interface PixPaymentModalProps {
         .padStart(2, "0")}`;
     };
 
-    const handleCopyPix = () => {
+    const handleCopyPix = async () => {
         if (isExpired) return;
-        navigator.clipboard.writeText(matriculaData.pixCopiaECola);
+        try {
+        await navigator.clipboard.writeText(matriculaData.pixCopiaECola);
         setCopied(true);
         setTimeout(() => setCopied(false), 3000);
+        } catch (error) {
+        console.error("Não foi possível copiar o código Pix:", error);
+        }
     };
 
     useEffect(() => {
@@ -65,108 +101,179 @@ interface PixPaymentModalProps {
 
         const interval = setInterval(async () => {
         try {
-            setIsVerifying(true);
-            const result = await MatriculaService.findById(
-            matriculaData.matricula
-            );
+            const result = await MatriculaService.findById(matriculaData.matricula);
 
             if (result && result.ativa) {
             clearInterval(interval);
-            onSuccess();
+            onSuccessRef.current();
             }
         } catch (error) {
             console.error("Erro ao verificar status do pagamento", error);
-        } finally {
-            setIsVerifying(false);
         }
         }, 5000);
 
         return () => clearInterval(interval);
-    }, [matriculaData.matricula, onSuccess, isExpired]);
+    }, [matriculaData.matricula, isExpired]);
+
+    const timerColor = isExpired ? "error" : timeLeft < 300 ? "warning" : "primary";
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div className="w-full max-w-md rounded-2xl bg-slate-900 p-6 text-white shadow-xl border border-slate-800 text-center">
-            <h2 className="text-xl font-bold text-emerald-400">Pagamento via Pix</h2>
-            <p className="text-sm text-slate-400 mt-1">
-            Escaneie o QR Code ou copie o código Pix abaixo para ativar sua
-            matrícula.
-            </p>
-
-            <div
-            className={`mt-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-mono font-semibold transition-colors ${
-                isExpired
-                ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
-                : timeLeft < 300
-                ? "bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse"
-                : "bg-slate-800 text-emerald-400 border border-slate-700"
-            }`}
+        <Dialog
+        open
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+            paper: {
+            sx: {
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "divider",
+                backgroundImage: "none",
+            },
+            },
+        }}
+        >
+        <DialogContent sx={{ p: { xs: 3, sm: 4 } }}>
+            <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2.5,
+            }}
             >
-            <span>⏱️</span>
-            {isExpired ? (
-                <span>QR CODE EXPIRADO</span>
-            ) : (
-                <span>Pix expira em: {formatTime(timeLeft)}</span>
-            )}
-            </div>
+            <Box
+                sx={{
+                width: 64,
+                height: 64,
+                borderRadius: "50%",
+                display: "grid",
+                placeItems: "center",
+                color: "primary.main",
+                bgcolor: (t) => alpha(t.palette.primary.main, 0.12),
+                boxShadow: (t) => `0 0 0 8px ${alpha(t.palette.primary.main, 0.06)}`,
+                }}
+            >
+                <Pix sx={{ fontSize: 36 }} />
+            </Box>
 
-            <div className="relative my-5 flex flex-col items-center justify-center rounded-xl bg-white p-4 shadow-inner">
-            <img
-                src={`data:image/png;base64,${matriculaData.qrCodeBase64}`}
-                alt="QR Code Pix"
-                className={`h-52 w-52 object-contain transition-all ${
-                isExpired ? "opacity-15 blur-xs" : ""
-                }`}
+            <Box sx={{ textAlign: "center" }}>
+                <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                Pagamento via Pix
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                Escaneie o QR Code ou copie o código Pix para ativar a matrícula.
+                </Typography>
+            </Box>
+
+            <Chip
+                icon={<TimerOutlined />}
+                color={timerColor}
+                variant="outlined"
+                label={
+                isExpired
+                    ? "QR Code expirado"
+                    : `Pix expira em ${formatTime(timeLeft)}`
+                }
+                sx={{
+                fontWeight: 800,
+                fontVariantNumeric: "tabular-nums",
+                animation:
+                    !isExpired && timeLeft < 300 ? `${blink} 1.2s infinite` : "none",
+                }}
             />
 
-            {isExpired && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 p-4 rounded-xl text-center">
-                <span className="text-2xl mb-1">⏳</span>
-                <p className="text-sm font-semibold text-rose-400">
+            <Box
+                sx={{
+                position: "relative",
+                p: 1.5,
+                bgcolor: "#fff",
+                borderRadius: 3,
+                boxShadow: "0 0 0 1px rgba(198,255,61,0.35), 0 12px 32px rgba(0,0,0,0.4)",
+                lineHeight: 0,
+                }}
+            >
+                <Box
+                component="img"
+                src={`data:image/png;base64,${matriculaData.qrCodeBase64}`}
+                alt="QR Code Pix"
+                sx={{
+                    width: 220,
+                    height: 220,
+                    display: "block",
+                    objectFit: "contain",
+                    opacity: isExpired ? 0.12 : 1,
+                    filter: isExpired ? "blur(3px)" : "none",
+                    transition: "all .3s",
+                }}
+                />
+
+                {isExpired && (
+                <Box
+                    sx={{
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: 3,
+                    bgcolor: "rgba(10,10,15,0.88)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    p: 3,
+                    lineHeight: 1.4,
+                    }}
+                >
+                    <HourglassBottom sx={{ fontSize: 36, color: "error.main", mb: 1 }} />
+                    <Typography sx={{ fontWeight: 800, color: "error.main" }}>
                     Código expirado
-                </p>
-                <p className="text-xs text-slate-300 mt-1">
-                    Feche este modal e gere uma nova cobrança para continuar.
-                </p>
-                </div>
-            )}
-            </div>
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                    Feche e gere uma nova cobrança para continuar.
+                    </Typography>
+                </Box>
+                )}
+            </Box>
 
-            <div className="space-y-3">
-            <button
-                onClick={handleCopyPix}
+            <Button
+                variant="contained"
+                color={copied ? "success" : "primary"}
+                fullWidth
+                size="large"
                 disabled={isExpired}
-                className={`w-full flex items-center justify-center gap-2 rounded-xl py-3 font-semibold transition-all ${
-                isExpired
-                    ? "bg-slate-800 text-slate-500 cursor-not-allowed"
-                    : "bg-emerald-500 text-slate-950 hover:bg-emerald-400 active:scale-95"
-                }`}
+                startIcon={copied ? <CheckCircleOutlined /> : <ContentCopy />}
+                onClick={handleCopyPix}
+                sx={{ py: 1.5 }}
             >
-                {copied ? "✅ Copiado!" : "📋 Copiar Chave Pix Copia e Cola"}
-            </button>
+                {copied ? "Código copiado!" : "Copiar Pix copia e cola"}
+            </Button>
 
-            <button
-                onClick={onClose}
-                className="w-full rounded-xl bg-slate-800 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-slate-700"
-            >
-                {isExpired ? "Fechar" : "Fechar e Pagar Mais Tarde"}
-            </button>
-            </div>
-
-            {!isExpired ? (
-            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-400">
-                <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
-                </span>
-                Aguardando confirmação do pagamento...
-            </div>
-            ) : (
-            <div className="mt-4 text-xs text-rose-400">
+            {isExpired ? (
+                <Typography variant="caption" sx={{ color: "error.main" }}>
                 A verificação automática foi pausada devido à expiração.
-            </div>
+                </Typography>
+            ) : (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <Box
+                    sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    bgcolor: "primary.main",
+                    animation: `${pulseDot} 1.6s infinite`,
+                    }}
+                />
+                <Typography variant="body2" color="text.secondary">
+                    Aguardando confirmação do pagamento...
+                </Typography>
+                </Box>
             )}
-        </div>
-        </div>
+
+            <Button color="inherit" size="small" onClick={onClose}>
+                {isExpired ? "Fechar" : "Fechar e pagar mais tarde"}
+            </Button>
+            </Box>
+        </DialogContent>
+        </Dialog>
     );
 }

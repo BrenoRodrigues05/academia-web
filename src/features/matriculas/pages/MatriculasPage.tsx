@@ -1,28 +1,29 @@
 import { useState } from "react";
-import {
-    Snackbar,
-    Alert,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Box,
-    } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
+import { FilterAlt, FilterAltOff } from "@mui/icons-material";
 
-    import CrudPage from "@/components/crud/CrudPage";
-    import CrudToolbar from "@/components/crud/CrudToolbar";
-    import { LoadingOverlay, EmptyState, ErrorState } from "@/components/feedback";
-    import { AppPagination, AppLoading } from "@/components/ui";
+import CrudPage from "@/components/crud/CrudPage";
+import CrudToolbar from "@/components/crud/CrudToolbar";
+import { LoadingOverlay, EmptyState, ErrorState } from "@/components/feedback";
+import AppSnackbar from "@/components/feedback/AppSnackbar";
+import { AppPagination, AppLoading } from "@/components/ui";
+import { AppSelectField } from "@/components/forms";
 
-    import useMatriculas from "../hooks/useMatriculas";
-    import MatriculasTable from "../components/MatriculasTable";
-    import MatriculasDialog from "../components/MatriculasDialog";
+import useMatriculas from "../hooks/useMatriculas";
+import MatriculasTable from "../components/MatriculasTable";
+import MatriculasDialog from "../components/MatriculasDialog";
 
-    import type { Matricula } from "../types";
-    import type { MatriculaFormData } from "../validation/matriculasSchema";
+import type { Matricula } from "../types";
+import type { MatriculaFormData } from "../validation/matriculasSchema";
 
-    type StatusMatriculaFilter = "todos" | "ativas" | "inativas";
-    type PlanoFilter = "todos" | string;
+type StatusMatriculaFilter = "todos" | "ativas" | "inativas";
+type PlanoFilter = "todos" | string;
+
+const statusOptions = [
+    { value: "todos", label: "Todas" },
+    { value: "ativas", label: "Ativas" },
+    { value: "inativas", label: "Inativas" },
+    ];
 
     export default function MatriculasPage() {
     const {
@@ -46,6 +47,21 @@ import {
 
     const [statusFilter, setStatusFilter] = useState<StatusMatriculaFilter>("todos");
     const [planoFilter, setPlanoFilter] = useState<PlanoFilter>("todos");
+
+    const hasFilters = statusFilter !== "todos" || planoFilter !== "todos";
+
+    const clearFilters = () => {
+        setStatusFilter("todos");
+        setPlanoFilter("todos");
+    };
+
+    const planoOptions = [
+        { value: "todos", label: "Todos os planos" },
+        ...(planos ?? []).map((plano) => ({
+        value: String(plano.id),
+        label: plano.nome,
+        })),
+    ];
 
     const handleCreateOpen = async () => {
         setSelectedMatricula(undefined);
@@ -144,78 +160,72 @@ import {
 
         <CrudPage
             toolbar={
-            <Box
-                sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-                width: "100%",
-                }}
-            >
-                <Box sx={{ flexGrow: 1, width: "100%" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
                 <CrudToolbar
-                    title="Matrículas"
-                    subtitle="Gerenciamento de matrículas de alunos"
-                    createLabel="Nova Matrícula"
-                    onCreate={handleCreateOpen}
+                title="Matrículas"
+                subtitle="Gerenciamento de matrículas de alunos"
+                createLabel="Nova Matrícula"
+                onCreate={handleCreateOpen}
                 />
+                
+                <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3, mt: -1 }}>
+                <Box
+                    sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mb: 2,
+                    }}
+                >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <FilterAlt sx={{ color: "primary.main" }} fontSize="small" />
+                    <Typography
+                        variant="overline"
+                        sx={{ fontWeight: 800, letterSpacing: 2, lineHeight: 1 }}
+                    >
+                        Filtros
+                    </Typography>
+                    </Box>
+
+                    {hasFilters && (
+                    <Button
+                        size="small"
+                        color="inherit"
+                        startIcon={<FilterAltOff />}
+                        onClick={clearFilters}
+                        sx={{ fontWeight: 700 }}
+                    >
+                        Limpar filtros
+                    </Button>
+                    )}
                 </Box>
 
                 <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
+                    sx={{
+                    display: "grid",
                     gap: 2,
-                    width: "100%",
-                    mt: -1,
-                    flexWrap: "wrap",
-                }}
+                    gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                    }}
                 >
-                <FormControl
-                    size="small"
-                    sx={{ minWidth: 180, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}
-                >
-                    <InputLabel id="status-matricula-filter-label">
-                    Status
-                    </InputLabel>
-                    <Select
-                    labelId="status-matricula-filter-label"
-                    value={statusFilter}
+                    <AppSelectField
                     label="Status"
+                    value={statusFilter}
+                    options={statusOptions}
                     onChange={(e) =>
                         setStatusFilter(e.target.value as StatusMatriculaFilter)
                     }
-                    >
-                    <MenuItem value="todos">Todas</MenuItem>
-                    <MenuItem value="ativas">Ativas</MenuItem>
-                    <MenuItem value="inativas">Inativas</MenuItem>
-                    </Select>
-                </FormControl>
+                    />
 
-                {planos && planos.length > 0 && (
-                    <FormControl
-                    size="small"
-                    sx={{ minWidth: 200, flex: { xs: "1 1 100%", sm: "0 1 auto" } }}
-                    >
-                    <InputLabel id="plano-filter-label">
-                        Filtrar por Plano
-                    </InputLabel>
-                    <Select
-                        labelId="plano-filter-label"
+                    {planos && planos.length > 0 && (
+                    <AppSelectField
+                        label="Plano"
                         value={planoFilter}
-                        label="Filtrar por Plano"
-                        onChange={(e) => setPlanoFilter(e.target.value as string)}
-                    >
-                        <MenuItem value="todos">Todos os planos</MenuItem>
-                        {planos.map((plano) => (
-                        <MenuItem key={plano.id} value={String(plano.id)}>
-                            {plano.nome}
-                        </MenuItem>
-                        ))}
-                    </Select>
-                    </FormControl>
-                )}
+                        options={planoOptions}
+                        onChange={(e) => setPlanoFilter(String(e.target.value))}
+                    />
+                    )}
                 </Box>
+                </Paper>
             </Box>
             }
             table={renderTableContent()}
@@ -251,21 +261,12 @@ import {
             }
         />
 
-        <Snackbar
+        <AppSnackbar
             open={notification.open}
-            autoHideDuration={4000}
-            onClose={closeNotification}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-            <Alert
-            onClose={closeNotification}
+            message={notification.message}
             severity={notification.severity}
-            variant="filled"
-            sx={{ width: "100%" }}
-            >
-            {notification.message}
-            </Alert>
-        </Snackbar>
+            onClose={closeNotification}
+        />
         </>
     );
 }

@@ -1,8 +1,9 @@
-import CrudTable from "@/components/crud/CrudTable"; 
+import CrudTable from "@/components/crud/CrudTable";
 import CrudActions from "@/components/crud/CrudActions";
 import type { CrudColumn } from "@/components/crud/types";
 import type { Aluno } from "../types/Aluno";
-import { Chip } from "@mui/material";
+import { Box, Chip, Typography } from "@mui/material";
+import { Circle } from "@mui/icons-material";
 
 type Props = {
   alunos: Aluno[];
@@ -11,33 +12,54 @@ type Props = {
   onDeactivate?: (aluno: Aluno) => void;
 };
 
+const formatSexo = (sexo?: string) =>
+  sexo ? sexo.charAt(0).toUpperCase() + sexo.slice(1).toLowerCase() : "—";
+
 export default function AlunoTable({
   alunos,
   onEdit,
   onDelete,
   onDeactivate,
 }: Props) {
-
   const columns: CrudColumn<Aluno>[] = [
     {
       field: "nome",
       header: "Nome",
+      render: (aluno) => (
+        <Box component="span" sx={{ fontWeight: 700 }}>
+          {aluno.nome}
+        </Box>
+      ),
     },
     {
       field: "email",
-      header: "Email",
+      header: "E-mail",
+      render: (aluno) => (
+        <Typography component="span" variant="body2" color="text.secondary">
+          {aluno.email}
+        </Typography>
+      ),
     },
     {
       field: "telefone",
       header: "Telefone",
+      render: (aluno) => aluno.telefone || "—",
     },
     {
       field: "sexo",
       header: "Sexo",
       align: "center",
+      render: (aluno) => (
+        <Chip
+          label={formatSexo(aluno.sexo)}
+          size="small"
+          variant="outlined"
+          sx={{ fontWeight: 600, minWidth: 80 }}
+        />
+      ),
     },
     {
-      field: "usuario", 
+      field: "usuario",
       header: "Status",
       align: "center",
       render: (aluno) => {
@@ -47,8 +69,9 @@ export default function AlunoTable({
             label={isAtivo ? "Ativo" : "Inativo"}
             size="small"
             color={isAtivo ? "success" : "error"}
-            variant="filled"
-            sx={{ fontWeight: "bold", minWidth: 80 }}
+            variant="outlined"
+            icon={<Circle sx={{ fontSize: "8px !important" }} />}
+            sx={{ fontWeight: 700, minWidth: 90 }}
           />
         );
       },
@@ -73,7 +96,7 @@ export default function AlunoTable({
     <CrudTable<Aluno>
       columns={columns}
       rows={alunos}
-      rowKey={(aluno) => aluno.id} 
+      rowKey={(aluno) => aluno.id}
     />
   );
 }

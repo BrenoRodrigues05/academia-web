@@ -1,88 +1,82 @@
-import {
-    Chip,
-    IconButton,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Tooltip,
-} from "@mui/material";
+import { Box, Chip, Typography } from "@mui/material";
+import { Circle } from "@mui/icons-material";
 
-import EditIcon from "@mui/icons-material/Edit";
-import BlockIcon from "@mui/icons-material/Block";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-
+import CrudTable from "@/components/crud/CrudTable";
+import CrudActions from "@/components/crud/CrudActions";
+import type { CrudColumn } from "@/components/crud/types";
 import type { Matricula } from "../types";
 
 interface MatriculasTableProps {
     matriculas: Matricula[];
     onEdit: (matricula: Matricula) => void;
     onToggleStatus: (matricula: Matricula) => void;
-}
+    }
 
-export default function MatriculasTable({
+    export default function MatriculasTable({
     matriculas,
     onEdit,
     onToggleStatus,
-}: MatriculasTableProps) {
+    }: MatriculasTableProps) {
+    const columns: CrudColumn<Matricula>[] = [
+        {
+        field: "aluno",
+        header: "Aluno",
+        render: (matricula) => (
+            <Box component="span" sx={{ fontWeight: 700 }}>
+            {matricula.aluno?.nome ?? "—"}
+            </Box>
+        ),
+        },
+        {
+        field: "plano",
+        header: "Plano",
+        render: (matricula) => matricula.plano?.nome ?? "—",
+        },
+        {
+        field: "matricula",
+        header: "Nº",
+        width: 90,
+        render: (matricula) => (
+            <Typography component="span" variant="body2" color="text.secondary">
+            #{matricula.matricula}
+            </Typography>
+        ),
+        },
+        {
+        field: "ativa",
+        header: "Status",
+        align: "center",
+        render: (matricula) => (
+            <Chip
+            label={matricula.ativa ? "Ativa" : "Inativa"}
+            size="small"
+            color={matricula.ativa ? "success" : "default"}
+            variant="outlined"
+            icon={<Circle sx={{ fontSize: "8px !important" }} />}
+            sx={{ fontWeight: 700, minWidth: 90 }}
+            />
+        ),
+        },
+        {
+        field: "matricula",
+        header: "Ações",
+        align: "center",
+        width: 120,
+        render: (matricula) => (
+            <CrudActions
+            onEdit={() => onEdit(matricula)}
+            onDeactivate={() => onToggleStatus(matricula)}
+            isAtivo={matricula.ativa}
+            />
+        ),
+        },
+    ];
+
     return (
-        <TableContainer component={Paper}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell width={80}>ID</TableCell>
-                        <TableCell>Aluno</TableCell>
-                        <TableCell>Plano</TableCell>
-                        <TableCell align="center">Status</TableCell>
-                        <TableCell align="center">Ações</TableCell>
-                    </TableRow>
-                </TableHead>
-
-                <TableBody>
-                    {matriculas.map((matricula) => (
-                        <TableRow key={matricula.matricula} hover>
-                            <TableCell>{matricula.matricula}</TableCell>
-                            <TableCell>{matricula.aluno?.nome ?? "—"}</TableCell>
-                            <TableCell>{matricula.plano?.nome ?? "—"}</TableCell>
-
-                            <TableCell align="center">
-                                <Chip
-                                    label={matricula.ativa ? "Ativa" : "Inativa"}
-                                    color={matricula.ativa ? "success" : "default"}
-                                    size="small"
-                                />
-                            </TableCell>
-
-                            <TableCell align="center">
-                                <Tooltip title="Editar">
-                                    <IconButton
-                                        color="primary"
-                                        onClick={() => onEdit(matricula)}
-                                    >
-                                        <EditIcon />
-                                    </IconButton>
-                                </Tooltip>
-
-                                <Tooltip title={matricula.ativa ? "Desativar" : "Ativar"}>
-                                    <IconButton
-                                        color={matricula.ativa ? "error" : "success"}
-                                        onClick={() => onToggleStatus(matricula)}
-                                    >
-                                        {matricula.ativa ? (
-                                            <BlockIcon />
-                                        ) : (
-                                            <CheckCircleIcon />
-                                        )}
-                                    </IconButton>
-                                </Tooltip>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <CrudTable<Matricula>
+        columns={columns}
+        rows={matriculas}
+        rowKey={(matricula) => matricula.matricula}
+        />
     );
 }

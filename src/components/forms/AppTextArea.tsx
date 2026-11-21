@@ -1,11 +1,11 @@
 import { TextField } from "@mui/material";
-import type {TextFieldProps} from "@mui/material";
+import type { TextFieldProps } from "@mui/material";
 
 export type AppTextAreaProps = Omit<TextFieldProps, "multiline"> & {
     minRows?: number;
-};
+    };
 
-export default function AppTextArea({
+    export default function AppTextArea({
     label,
     minRows = 3,
     size = "small",

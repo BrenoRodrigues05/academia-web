@@ -1,131 +1,130 @@
-import { Button, Grid, MenuItem, TextField } from "@mui/material";
+import { Grid, InputAdornment } from "@mui/material";
+import { FitnessCenterOutlined } from "@mui/icons-material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { GrupoMuscular } from "@/shared/enums/GrupoMuscular";
 import { GrupoMuscularLabel } from "@/shared/enums/GrupoMuscularLabel";
 
 import {
+    AppTextField,
+    AppSelectField,
+    AppTextArea,
+    } from "@/components/forms";
+
+    import {
     exercicioSchema,
     type ExercicioFormData,
-} from "../validation/exercicioSchema";
+    } from "../validation/exercicioSchema";
 
-import type { Exercicio } from "../types";
+    import type { Exercicio } from "../types";
 
-type Props = {
+    type Props = {
     exercicio?: Exercicio | null;
     onSubmit: (data: ExercicioFormData) => Promise<void>;
-};
+    };
 
-export default function ExercicioForm({
-    exercicio,
-    onSubmit,
-}: Props) {
+    const grupoOptions = Object.values(GrupoMuscular).map((grupo) => ({
+    value: grupo,
+    label: GrupoMuscularLabel[grupo],
+    }));
 
+    export default function ExercicioForm({ exercicio, onSubmit }: Props) {
     const {
-        register,
+        control,
         handleSubmit,
         reset,
-        formState: { errors, isSubmitting },
+        formState: { errors },
     } = useForm<ExercicioFormData>({
         resolver: zodResolver(exercicioSchema),
         defaultValues: {
-            nome: "",
-            grupoMuscular: undefined,
-            descricao: "",
+        nome: "",
+        grupoMuscular: undefined,
+        descricao: "",
         },
     });
 
     useEffect(() => {
-
         if (exercicio) {
-
-            reset({
-                nome: exercicio.nome,
-                grupoMuscular: exercicio.grupoMuscular,
-                descricao: exercicio.descricao,
-            });
-
+        reset({
+            nome: exercicio.nome,
+            grupoMuscular: exercicio.grupoMuscular,
+            descricao: exercicio.descricao,
+        });
         } else {
-
-            reset({
-                nome: "",
-                grupoMuscular: undefined,
-                descricao: "",
-            });
-
+        reset({
+            nome: "",
+            grupoMuscular: undefined,
+            descricao: "",
+        });
         }
-
     }, [exercicio, reset]);
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-
-            <Grid container spacing={2}>
-
-                <Grid size={12}>
-                    <TextField
-                        label="Nome"
-                        fullWidth
-                        {...register("nome")}
-                        error={!!errors.nome}
-                        helperText={errors.nome?.message}
-                    />
-                </Grid>
-
-                <Grid size={12}>
-                    <TextField
-                        select
-                        label="Grupo Muscular"
-                        fullWidth
-                        defaultValue=""
-                        {...register("grupoMuscular")}
-                        error={!!errors.grupoMuscular}
-                        helperText={errors.grupoMuscular?.message}
-                    >
-                        <MenuItem value="" disabled>
-                            Selecione um grupo muscular
-                        </MenuItem>
-
-                        {Object.values(GrupoMuscular).map((grupo) => (
-                            <MenuItem
-                                key={grupo}
-                                value={grupo}
-                            >
-                                {GrupoMuscularLabel[grupo]}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </Grid>
-
-                <Grid size={12}>
-                    <TextField
-                        label="Descrição"
-                        fullWidth
-                        multiline
-                        rows={4}
-                        {...register("descricao")}
-                        error={!!errors.descricao}
-                        helperText={errors.descricao?.message}
-                    />
-                </Grid>
-
-                <Grid size={12}>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        fullWidth
-                        loading={isSubmitting}
-                    >
-                        {exercicio
-                            ? "Atualizar Exercício"
-                            : "Cadastrar Exercício"}
-                    </Button>
-                </Grid>
-
+        <form id="crud-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Grid container spacing={2.5}>
+            <Grid size={12}>
+            <Controller
+                name="nome"
+                control={control}
+                render={({ field }) => (
+                <AppTextField
+                    {...field}
+                    label="Nome"
+                    autoComplete="off"
+                    error={!!errors.nome}
+                    helperText={errors.nome?.message}
+                    slotProps={{
+                    input: {
+                        startAdornment: (
+                        <InputAdornment position="start">
+                            <FitnessCenterOutlined
+                            sx={{ color: "text.secondary", fontSize: 20 }}
+                            />
+                        </InputAdornment>
+                        ),
+                    },
+                    }}
+                />
+                )}
+            />
             </Grid>
 
+            <Grid size={12}>
+            <Controller
+                name="grupoMuscular"
+                control={control}
+                render={({ field }) => (
+                <AppSelectField
+                    {...field}
+                    value={field.value ?? ""}
+                    label="Grupo muscular"
+                    options={grupoOptions}
+                    error={!!errors.grupoMuscular}
+                    helperText={errors.grupoMuscular?.message}
+                />
+                )}
+            />
+            </Grid>
+
+            <Grid size={12}>
+            <Controller
+                name="descricao"
+                control={control}
+                render={({ field }) => (
+                <AppTextArea
+                    {...field}
+                    value={field.value ?? ""}
+                    label="Descrição"
+                    minRows={4}
+                    error={!!errors.descricao}
+                    helperText={errors.descricao?.message}
+                />
+                )}
+            />
+            </Grid>
+        </Grid>
         </form>
     );
 }

@@ -1,19 +1,26 @@
-import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
-import type { SelectProps } from "@mui/material";
+import { useId } from "react";
+import {
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    MenuItem,
+    Select,
+    } from "@mui/material";
+    import type { SelectProps } from "@mui/material";
 
-export type SelectOption = {
+    export type SelectOption = {
     value: string | number;
     label: string;
-};
+    };
 
-export type AppSelectFieldProps = Omit<SelectProps, "label"> & {
+    export type AppSelectFieldProps = Omit<SelectProps, "label"> & {
     label: string;
     options: SelectOption[];
     helperText?: string;
     error?: boolean;
-};
+    };
 
-export default function AppSelectField({
+    export default function AppSelectField({
     label,
     options,
     value,
@@ -22,9 +29,10 @@ export default function AppSelectField({
     fullWidth = true,
     error,
     helperText,
+    MenuProps,
     ...props
     }: AppSelectFieldProps) {
-    const labelId = `select-label-${label.replace(/\s+/g, "-").toLowerCase()}`;
+    const labelId = useId();
 
     return (
         <FormControl size={size} fullWidth={fullWidth} error={error}>
@@ -34,6 +42,20 @@ export default function AppSelectField({
             label={label}
             value={value}
             onChange={onChange}
+            MenuProps={{
+            ...MenuProps,
+            slotProps: {
+                ...MenuProps?.slotProps,
+                paper: {
+                sx: {
+                    mt: 0.5,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 2,
+                },
+                },
+            },
+            }}
             {...props}
         >
             {options.map((option) => (

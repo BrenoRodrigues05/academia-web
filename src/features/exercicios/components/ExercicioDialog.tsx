@@ -1,8 +1,4 @@
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-} from "@mui/material";
+import CrudDialog from "@/components/crud/CrudDialog";
 
 import ExercicioForm from "./ExercicioForm";
 
@@ -12,53 +8,27 @@ import type { ExercicioFormData } from "../validation/exercicioSchema";
 type Props = {
     open: boolean;
     exercicio?: Exercicio | null;
+    loading?: boolean;
     onClose: () => void;
     onSubmit: (data: ExercicioFormData) => Promise<void>;
-};
+    };
 
-export default function ExercicioDialog({
+    export default function ExercicioDialog({
     open,
     exercicio,
+    loading = false,
     onClose,
     onSubmit,
-}: Props) {
-
-    async function handleSubmit(data: ExercicioFormData) {
-        await onSubmit(data);
-        onClose();
-    }
-
+    }: Props) {
     return (
-
-        <Dialog
-            open={open}
-            onClose={onClose}
-            fullWidth
-            maxWidth="sm"
+        <CrudDialog
+        open={open}
+        title={exercicio ? "Editar Exercício" : "Novo Exercício"}
+        loading={loading}
+        maxWidth="sm"
+        onClose={onClose}
         >
-
-            <DialogTitle>
-
-                {exercicio
-                    ? "Editar Exercício"
-                    : "Novo Exercício"}
-
-            </DialogTitle>
-
-            <DialogContent sx={{ pt: 2 }}>
-
-                <ExercicioForm
-
-                    exercicio={exercicio}
-
-                    onSubmit={handleSubmit}
-
-                />
-
-            </DialogContent>
-
-        </Dialog>
-
+        <ExercicioForm exercicio={exercicio} onSubmit={onSubmit} />
+        </CrudDialog>
     );
-
 }

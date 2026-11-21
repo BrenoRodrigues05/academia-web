@@ -1,43 +1,20 @@
-import {
-
-Backdrop,
-
-CircularProgress,
-
-} from "@mui/material";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 type Props = {
-
     open: boolean;
+    };
 
-};
-
-export default function LoadingOverlay({
-
-    open,
-
-}: Props) {
-
+    export default function LoadingOverlay({ open }: Props) {
     return (
-
         <Backdrop
-
-            open={open}
-
-            sx={{
-
-                zIndex: (theme) =>
-
-                    theme.zIndex.drawer + 10,
-
-            }}
-
+        open={open}
+        sx={{
+            zIndex: (theme) => theme.zIndex.drawer + 10,
+            bgcolor: "rgba(10,10,15,0.7)",
+            backdropFilter: "blur(4px)",
+        }}
         >
-
-            <CircularProgress />
-
+        <CircularProgress thickness={4} size={56} />
         </Backdrop>
-
     );
-
 }

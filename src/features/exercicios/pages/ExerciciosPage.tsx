@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Box, TextField, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
+import { FilterAlt } from "@mui/icons-material";
 
 import CrudPage from "@/components/crud/CrudPage";
 import CrudToolbar from "@/components/crud/CrudToolbar";
 import ConfirmDialog from "@/components/feedback/ConfirmDialog";
 import { LoadingOverlay, EmptyState, ErrorState } from "@/components/feedback";
-import { AppPagination, AppLoading } from "@/components/ui";
+import { AppPagination, AppLoading, AppSearch } from "@/components/ui";
+import { AppSelectField } from "@/components/forms";
 import AppSnackbar from "@/components/feedback/AppSnackbar";
 
 import { GrupoMuscular } from "@/shared/enums/GrupoMuscular";
@@ -18,7 +20,15 @@ import ExercicioTable from "../components/ExercicioTable";
 import type { Exercicio } from "../types";
 import type { ExercicioFormData } from "../validation/exercicioSchema";
 
-export default function ExerciciosPage() {
+const grupoOptions = [
+    { value: "todos", label: "Todos os grupos" },
+    ...Object.values(GrupoMuscular).map((grupo) => ({
+        value: grupo,
+        label: GrupoMuscularLabel[grupo],
+    })),
+    ];
+
+    export default function ExerciciosPage() {
     const {
         data,
         loading,
@@ -37,6 +47,7 @@ export default function ExerciciosPage() {
     const [selectedExercicio, setSelectedExercicio] = useState<Exercicio | null>(null);
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [exercicioTarget, setExercicioTarget] = useState<Exercicio | null>(null);
 
     const [searchTerm, setSearchTerm] = useState("");
@@ -82,11 +93,13 @@ export default function ExerciciosPage() {
 
     async function confirmExcluir() {
         if (!exercicioTarget) return;
+        setDeleting(true);
         try {
         await remove(exercicioTarget.id);
         } catch (error) {
         console.error("Erro ao excluir exercício:", error);
         } finally {
+        setDeleting(false);
         setDeleteDialogOpen(false);
         setExercicioTarget(null);
         }
@@ -145,79 +158,45 @@ export default function ExerciciosPage() {
 
         <CrudPage
             toolbar={
-            <Box
-                sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-                width: "100%",
-                }}
-            >
-                <Box sx={{ flexGrow: 1, width: "100%" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
                 <CrudToolbar
-                    title="Exercícios"
-                    subtitle="Gerenciamento da biblioteca de exercícios"
-                    createLabel="Novo Exercício"
-                    onCreate={handleNovo}
+                title="Exercícios"
+                subtitle="Gerenciamento da biblioteca de exercícios"
+                createLabel="Novo Exercício"
+                onCreate={handleNovo}
                 />
+
+                <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3, mt: -1 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                    <FilterAlt sx={{ color: "primary.main" }} fontSize="small" />
+                    <Typography
+                    variant="overline"
+                    sx={{ fontWeight: 800, letterSpacing: 2, lineHeight: 1 }}
+                    >
+                    Busca e filtros
+                    </Typography>
                 </Box>
 
                 <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
+                    sx={{
+                    display: "grid",
                     gap: 2,
-                    width: "100%",
-                    mt: -1,
-                    flexWrap: "wrap",
-                }}
-                >
-
-                <TextField
-                    size="small"
-                    label="Buscar por nome"
-                    variant="outlined"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    sx={{
-                    minWidth: 200,
-                    flex: { xs: "1 1 100%", sm: "1 1 200px" },
-                    }}
-                />
-
-
-                <FormControl
-                    size="small"
-                    sx={{
-                    minWidth: 160,
-                    flex: { xs: "1 1 100%", sm: "0 1 160px" },
+                    gridTemplateColumns: { xs: "1fr", md: "2fr 1fr" },
                     }}
                 >
-                    <InputLabel id="grupo-muscular-filter-label">
-                    Grupo Muscular
-                    </InputLabel>
-                    <Select
-                    labelId="grupo-muscular-filter-label"
+                    <AppSearch
+                    placeholder="Buscar exercício por nome..."
+                    onSearch={setSearchTerm}
+                    />
+
+                    <AppSelectField
+                    label="Grupo muscular"
                     value={grupoMuscularFilter}
-                    label="Grupo Muscular"
-                    onChange={(e) =>
-                        setGrupoMuscularFilter(
-                        e.target.value as GrupoMuscular | "todos"
-                        )
-                    }
-                    >
-                    <MenuItem value="todos">
-                        Todos os grupos
-                    </MenuItem>
-
-                    {Object.values(GrupoMuscular).map((grupo) => (
-                        <MenuItem key={grupo} value={grupo}>
-                        {GrupoMuscularLabel[grupo]}
-                        </MenuItem>
-                    ))}
-                    </Select>
-                </FormControl>
+                    options={grupoOptions}
+                    onChange={(e) => setGrupoMuscularFilter(String(e.target.value))}
+                    />
                 </Box>
+                </Paper>
             </Box>
             }
             table={renderTableContent()}
@@ -238,6 +217,7 @@ export default function ExerciciosPage() {
             <ExercicioDialog
                 open={dialogOpen}
                 exercicio={selectedExercicio}
+                loading={submitting}
                 onClose={handleFechar}
                 onSubmit={handleSalvar}
             />
@@ -247,6 +227,7 @@ export default function ExerciciosPage() {
         <ConfirmDialog
             open={deleteDialogOpen}
             severity="error"
+            loading={deleting}
             title="Excluir Exercício"
             message={`Deseja realmente excluir o exercício "${exercicioTarget?.nome}"?`}
             confirmText="Excluir"

@@ -1,20 +1,11 @@
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Button,
-} from "@mui/material";
+import CrudDialog from "@/components/crud/CrudDialog";
 
 import MatriculaForm from "./MatriculaForm";
 
 import type { Aluno } from "@/features/alunos/types";
 import type { Plano } from "@/features/planos/types";
 
-import type {
-    Matricula,
-    MatriculaCreate,
-} from "../types";
+import type { Matricula, MatriculaCreate } from "../types";
 
 import type { MatriculaFormData } from "../validation/matriculasSchema";
 
@@ -27,9 +18,9 @@ interface MatriculasDialogProps {
     matriculas?: Matricula[];
     loading: boolean;
     matricula?: Matricula;
-}
+    }
 
-export default function MatriculasDialog({
+    export default function MatriculasDialog({
     open,
     onClose,
     onSubmit,
@@ -38,49 +29,43 @@ export default function MatriculasDialog({
     matriculas = [],
     loading,
     matricula,
-}: MatriculasDialogProps) {
+    }: MatriculasDialogProps) {
+    const isEditMode = Boolean(matricula);
+    const isMatriculaInativa = isEditMode && matricula?.ativa === false;
 
     const defaultValues: Partial<MatriculaCreate> | undefined = matricula
         ? {
-            alunoId: typeof matricula.aluno === "object" ? matricula.aluno?.id : matricula.aluno,
-            planoId: typeof matricula.plano === "object" ? matricula.plano?.id : matricula.plano,
+            alunoId:
+            typeof matricula.aluno === "object"
+                ? matricula.aluno?.id
+                : matricula.aluno,
+            planoId:
+            typeof matricula.plano === "object"
+                ? matricula.plano?.id
+                : matricula.plano,
             ativa: matricula.ativa,
         }
         : undefined;
 
     return (
-        <Dialog
-            open={open}
-            onClose={onClose}
-            fullWidth
-            maxWidth="sm"
+        <CrudDialog
+        open={open}
+        title={matricula ? "Editar Matrícula" : "Nova Matrícula"}
+        loading={loading}
+        maxWidth="sm"
+        submitLabel={matricula ? "Salvar alterações" : "Gerar pagamento Pix"}
+        submitDisabled={isMatriculaInativa}
+        onClose={onClose}
         >
-            <DialogTitle>
-                {matricula
-                    ? "Editar Matrícula"
-                    : "Nova Matrícula"}
-            </DialogTitle>
-
-            <DialogContent sx={{ mt: 2 }}>
-                <MatriculaForm
-                    defaultValues={defaultValues}
-                    alunos={alunos}
-                    planos={planos}
-                    matriculas={matriculas} 
-                    loading={loading}
-                    onSubmit={onSubmit}
-                />
-            </DialogContent>
-
-            <DialogActions>
-                <Button
-                    onClick={onClose}
-                    color="inherit"
-                    disabled={loading}
-                >
-                    Cancelar
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <MatriculaForm
+            defaultValues={defaultValues}
+            alunos={alunos}
+            planos={planos}
+            matriculas={matriculas}
+            loading={loading}
+            isEditMode={isEditMode}
+            onSubmit={onSubmit}
+        />
+        </CrudDialog>
     );
 }

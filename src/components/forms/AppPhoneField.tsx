@@ -1,5 +1,5 @@
 import { TextField } from "@mui/material";
-import type {TextFieldProps} from "@mui/material";
+import type { TextFieldProps } from "@mui/material";
 
 export type AppPhoneFieldProps = TextFieldProps;
 
@@ -15,15 +15,16 @@ export default function AppPhoneField({
         label={label}
         size={size}
         fullWidth={fullWidth}
+        {...props}
         slotProps={{
+            ...slotProps,
             htmlInput: {
-            inputMode: "tel", 
+            inputMode: "tel",
             pattern: "[0-9]*",
             style: { padding: size === "small" ? "10px 14px" : undefined },
             ...slotProps?.htmlInput,
             },
         }}
-        {...props}
         />
     );
 }

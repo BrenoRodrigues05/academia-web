@@ -1,13 +1,6 @@
-import { useEffect, useState } from "react";
-import {
-  IconButton,
-  InputAdornment,
-  TextField,
-} from "@mui/material";
-import {
-  Search,
-  Close,
-} from "@mui/icons-material";
+import { useEffect, useRef, useState } from "react";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
+import { Close, Search } from "@mui/icons-material";
 
 type Props = {
   value?: string;
@@ -23,14 +16,19 @@ export default function AppSearch({
   onSearch,
 }: Props) {
   const [search, setSearch] = useState(value);
+  const onSearchRef = useRef(onSearch);
+
+  useEffect(() => {
+    onSearchRef.current = onSearch;
+  }, [onSearch]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      onSearch(search);
+      onSearchRef.current(search);
     }, debounce);
 
     return () => clearTimeout(timeout);
-  }, [search, debounce, onSearch]);
+  }, [search, debounce]);
 
   return (
     <TextField
@@ -42,7 +40,7 @@ export default function AppSearch({
         input: {
           startAdornment: (
             <InputAdornment position="start">
-              <Search />
+              <Search sx={{ color: "text.secondary" }} />
             </InputAdornment>
           ),
           endAdornment: search ? (
@@ -50,11 +48,12 @@ export default function AppSearch({
               <IconButton
                 size="small"
                 onClick={() => setSearch("")}
+                aria-label="Limpar busca"
               >
-                <Close />
+                <Close fontSize="small" />
               </IconButton>
             </InputAdornment>
-          ) : null, 
+          ) : null,
         },
       }}
     />

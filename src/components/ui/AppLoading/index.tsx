@@ -1,18 +1,20 @@
-import {
-  Box,
-  CircularProgress,
-} from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
 export default function AppLoading() {
   return (
     <Box
       sx={{
         display: "flex",
-        justifyContent: "center",
-        py: 6, 
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 2,
+        py: 8,
       }}
     >
-      <CircularProgress />
+      <CircularProgress thickness={4} />
+      <Typography variant="body2" color="text.secondary">
+        Carregando...
+      </Typography>
     </Box>
   );
 }

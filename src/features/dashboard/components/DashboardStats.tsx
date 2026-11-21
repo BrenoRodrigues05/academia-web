@@ -29,20 +29,22 @@ import {
     if (isAluno) {
         return (
         <Grid container spacing={3}>
-            <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
             <DashboardCard
                 title="Meus Treinos"
-                icon={<FitnessCenter color="primary" fontSize="medium" />}
-                buttonText="Acessar Treinos"
+                color="primary"
+                icon={<FitnessCenter />}
+                buttonText="Acessar treinos"
                 onClick={() => navigate("/treinos")}
             />
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
             <DashboardCard
                 title="Meu Plano"
-                icon={<CreditCard color="success" fontSize="medium" />}
-                buttonText="Ver Plano Ativo"
+                color="success"
+                icon={<CreditCard />}
+                buttonText="Ver plano ativo"
                 onClick={() => navigate("/planos")}
             />
             </Grid>
@@ -56,7 +58,8 @@ import {
             <DashboardCard
             title="Alunos"
             value={totalAlunos}
-            icon={<People color="primary" />}
+            color="primary"
+            icon={<People />}
             />
         </Grid>
 
@@ -64,7 +67,8 @@ import {
             <DashboardCard
             title="Planos"
             value={totalPlanos}
-            icon={<CreditCard color="success" />}
+            color="success"
+            icon={<CreditCard />}
             />
         </Grid>
 
@@ -72,7 +76,8 @@ import {
             <DashboardCard
             title="Personais"
             value={totalPersonais}
-            icon={<SportsGymnastics color="warning" />}
+            color="warning"
+            icon={<SportsGymnastics />}
             />
         </Grid>
 
@@ -80,7 +85,8 @@ import {
             <DashboardCard
             title="Treinos"
             value={totalTreinos}
-            icon={<FitnessCenter color="error" />}
+            color="error"
+            icon={<FitnessCenter />}
             />
         </Grid>
         </Grid>

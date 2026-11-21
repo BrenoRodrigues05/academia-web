@@ -1,14 +1,21 @@
 import {
+  Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  alpha,
 } from "@mui/material";
+import {
+  BlockOutlined,
+  InfoOutlined,
+  WarningAmberOutlined,
+} from "@mui/icons-material";
 
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import BlockIcon from "@mui/icons-material/Block"; 
+type Severity = "warning" | "error" | "info";
 
 type Props = {
   open: boolean;
@@ -17,9 +24,15 @@ type Props = {
   loading?: boolean;
   confirmText?: string;
   cancelText?: string;
-  severity?: "warning" | "error" | "info";
+  severity?: Severity;
   onConfirm: () => void;
   onCancel: () => void;
+};
+
+const config: Record<Severity, { icon: React.ReactNode; color: "primary" | "warning" | "error" }> = {
+  info: { icon: <InfoOutlined sx={{ fontSize: 40 }} />, color: "primary" },
+  warning: { icon: <WarningAmberOutlined sx={{ fontSize: 40 }} />, color: "warning" },
+  error: { icon: <BlockOutlined sx={{ fontSize: 40 }} />, color: "error" },
 };
 
 export default function ConfirmDialog({
@@ -29,16 +42,11 @@ export default function ConfirmDialog({
   loading = false,
   confirmText = "Confirmar",
   cancelText = "Cancelar",
-  severity = "info", 
+  severity = "info",
   onConfirm,
   onCancel,
 }: Props) {
-
-  const getButtonColor = () => {
-    if (severity === "error") return "error";      
-    if (severity === "warning") return "warning";  
-    return "primary";                            
-  };
+  const { icon, color } = config[severity];
 
   return (
     <Dialog
@@ -48,31 +56,50 @@ export default function ConfirmDialog({
       fullWidth
       slotProps={{
         paper: {
-          sx: { 
-            borderRadius: 3, 
-            padding: 1 
-          }
-        }
+          sx: {
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "divider",
+            backgroundImage: "none",
+            pt: 2,
+          },
+        },
       }}
     >
-      <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1.5, fontWeight: "bold" }}>
-        {severity === "error" && <BlockIcon color="error" fontSize="large" />}
-        {severity === "warning" && <WarningAmberIcon color="warning" fontSize="large" />}
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Box
+          sx={{
+            width: 72,
+            height: 72,
+            borderRadius: "50%",
+            display: "grid",
+            placeItems: "center",
+            color: `${color}.main`,
+            bgcolor: (t) => alpha(t.palette[color].main, 0.12),
+            boxShadow: (t) => `0 0 0 8px ${alpha(t.palette[color].main, 0.06)}`,
+          }}
+        >
+          {icon}
+        </Box>
+      </Box>
+
+      <DialogTitle sx={{ textAlign: "center", fontWeight: 800, pb: 1 }}>
         {title}
       </DialogTitle>
 
       <DialogContent>
-        <DialogContentText sx={{ color: "text.secondary" }}>
+        <DialogContentText sx={{ textAlign: "center", color: "text.secondary" }}>
           {message}
         </DialogContentText>
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 2 }}>
+      <DialogActions sx={{ px: 3, pb: 3, pt: 1, gap: 1 }}>
         <Button
           onClick={onCancel}
           disabled={loading}
           color="inherit"
-          sx={{ fontWeight: "bold" }}
+          fullWidth
+          sx={{ py: 1.1 }}
         >
           {cancelText}
         </Button>
@@ -80,11 +107,11 @@ export default function ConfirmDialog({
           variant="contained"
           onClick={onConfirm}
           disabled={loading}
-          disableElevation 
-          color={getButtonColor()} 
-          sx={{ fontWeight: "bold", borderRadius: 2 }}
+          color={color}
+          fullWidth
+          sx={{ py: 1.1, m: 0 }}
         >
-          {confirmText}
+          {loading ? <CircularProgress size={22} color="inherit" /> : confirmText}
         </Button>
       </DialogActions>
     </Dialog>

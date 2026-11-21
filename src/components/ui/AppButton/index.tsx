@@ -1,19 +1,15 @@
 import { Button } from "@mui/material";
 import type { ButtonProps } from "@mui/material";
 
-type Props = ButtonProps;
-
-export default function AppButton({
-    children,
-    ...props
-}: Props) {
+export default function AppButton({ children, ...props }: ButtonProps) {
     return (
-    <Button
+        <Button
         variant="contained"
         size="large"
         {...props}
-    >
+        sx={{ borderRadius: 2, px: 3, ...props.sx }}
+        >
         {children}
-    </Button>
-    ) ;
+        </Button>
+    );
 }

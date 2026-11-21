@@ -1,15 +1,20 @@
-import { Grid } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Grid, InputAdornment } from "@mui/material";
+    import {
+    BadgeOutlined,
+    MailOutlined,
+    PhoneOutlined,
+    } from "@mui/icons-material";
+    import { Controller, useForm } from "react-hook-form";
+    import { zodResolver } from "@hookform/resolvers/zod";
 
-import { alunoSchema } from "../validation/alunoSchema";
-import { Sexo } from "../../../shared/enums/Sexo";
+    import { alunoSchema } from "../validation/alunoSchema";
+    import { Sexo } from "../../../shared/enums/Sexo";
 
-import { 
-    AppTextField, 
-    AppSelectField, 
-    AppDateField, 
-    AppPhoneField 
+    import {
+    AppTextField,
+    AppSelectField,
+    AppDateField,
+    AppPhoneField,
     } from "@/components/forms";
 
     import type { AlunoSchema } from "../validation/alunoSchema";
@@ -17,13 +22,23 @@ import {
     type Props = {
     defaultValues?: Partial<AlunoSchema>;
     onSubmit: (data: AlunoSchema) => void;
-    isEditing?: boolean; 
+    isEditing?: boolean;
     };
 
     const sexoOptions = [
     { value: Sexo.MASCULINO, label: "Masculino" },
     { value: Sexo.FEMININO, label: "Feminino" },
     ];
+
+    const withIcon = (icon: React.ReactNode) => ({
+    input: {
+        startAdornment: (
+        <InputAdornment position="start">{icon}</InputAdornment>
+        ),
+    },
+    });
+
+    const iconSx = { color: "text.secondary", fontSize: 20 };
 
     export default function AlunoForm({
     defaultValues,
@@ -42,12 +57,8 @@ import {
     const isEditMode = isEditing ?? Boolean(defaultValues?.email);
 
     return (
-        <form
-        id="crud-form"
-        onSubmit={handleSubmit(onSubmit)}
-        >
-        <Grid container spacing={2}>
-            
+        <form id="crud-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Grid container spacing={2.5}>
             <Grid size={{ xs: 12 }}>
             <Controller
                 name="nome"
@@ -56,8 +67,10 @@ import {
                 <AppTextField
                     {...field}
                     label="Nome"
+                    autoComplete="off"
                     error={!!errors.nome}
                     helperText={errors.nome?.message}
+                    slotProps={withIcon(<BadgeOutlined sx={iconSx} />)}
                 />
                 )}
             />
@@ -72,9 +85,14 @@ import {
                     {...field}
                     label="E-mail"
                     type="email"
+                    autoComplete="off"
                     disabled={isEditMode}
                     error={!!errors.email}
-                    helperText={errors.email?.message}
+                    helperText={
+                    errors.email?.message ??
+                    (isEditMode ? "O e-mail não pode ser alterado." : undefined)
+                    }
+                    slotProps={withIcon(<MailOutlined sx={iconSx} />)}
                 />
                 )}
             />
@@ -90,6 +108,7 @@ import {
                     label="Telefone"
                     error={!!errors.telefone}
                     helperText={errors.telefone?.message}
+                    slotProps={withIcon(<PhoneOutlined sx={iconSx} />)}
                 />
                 )}
             />

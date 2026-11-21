@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, DialogContent } from "@mui/material";
+import CrudDialog from "@/components/crud/CrudDialog";
 import ProdutoForm from "./ProdutoForm";
 import type { Produto } from "../types";
 import type { ProdutoFormData } from "../validation/produtoSchema";
@@ -6,32 +6,27 @@ import type { ProdutoFormData } from "../validation/produtoSchema";
 type Props = {
     open: boolean;
     produto?: Produto;
+    loading?: boolean;
     onClose: () => void;
     onSubmit: (data: ProdutoFormData) => Promise<void>;
-};
+    };
 
-export default function ProdutoDialog({
+    export default function ProdutoDialog({
     open,
     produto,
+    loading = false,
     onClose,
     onSubmit,
-}: Props) {
-    async function handleFormSubmit(data: ProdutoFormData) {
-        await onSubmit(data);
-        onClose();
-    }
-
+    }: Props) {
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>
-                {produto ? "Editar Produto" : "Novo Produto"}
-            </DialogTitle>
-            <DialogContent>
-                <ProdutoForm
-                    initialData={produto}
-                    onSubmit={handleFormSubmit}
-                />
-            </DialogContent>
-        </Dialog>
+        <CrudDialog
+        open={open}
+        title={produto ? "Editar Produto" : "Novo Produto"}
+        loading={loading}
+        maxWidth="sm"
+        onClose={onClose}
+        >
+        <ProdutoForm initialData={produto} onSubmit={onSubmit} />
+        </CrudDialog>
     );
 }

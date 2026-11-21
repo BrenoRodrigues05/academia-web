@@ -1,61 +1,81 @@
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import BlockIcon from "@mui/icons-material/Block";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import {
+  BlockOutlined,
+  CheckCircleOutlined,
+  DeleteOutlined,
+  EditOutlined,
+} from "@mui/icons-material";
+import { IconButton, Stack, Tooltip, alpha } from "@mui/material";
+import type { ReactNode } from "react";
 
-    import {
-    IconButton,
-    Stack,
-    Tooltip,
-    } from "@mui/material";
+type ActionColor = "primary" | "warning" | "success" | "error";
 
-    type Props = {
+type Props = {
     onEdit(): void;
-    onDelete(): void;
+    onDelete?(): void;
     onDeactivate?(): void;
-    isAtivo?: boolean; 
+    isAtivo?: boolean;
     };
 
-export default function CrudActions({
+    function ActionButton({
+    title,
+    color,
+    onClick,
+    children,
+    }: {
+    title: string;
+    color: ActionColor;
+    onClick(): void;
+    children: ReactNode;
+    }) {
+    return (
+        <Tooltip title={title}>
+        <IconButton
+            size="small"
+            color={color}
+            onClick={onClick}
+            aria-label={title}
+            sx={{
+            borderRadius: 2,
+            transition: "all .15s",
+            "&:hover": {
+                bgcolor: (t) => alpha(t.palette[color].main, 0.14),
+                transform: "translateY(-1px)",
+            },
+            }}
+        >
+            {children}
+        </IconButton>
+        </Tooltip>
+    );
+    }
+
+    export default function CrudActions({
     onEdit,
     onDelete,
     onDeactivate,
-    isAtivo = true, 
+    isAtivo = true,
     }: Props) {
     return (
-    <Stack
-        direction="row"
-        sx={{ justifyContent: "center" }}
-        spacing={1}
-    >
+        <Stack direction="row" spacing={0.5} sx={{ justifyContent: "center" }}>
         {onDeactivate && (
-            <Tooltip title={isAtivo ? "Desativar" : "Ativar"}>
-            <IconButton
-                color={isAtivo ? "warning" : "success"} 
-                onClick={onDeactivate}
+            <ActionButton
+            title={isAtivo ? "Desativar" : "Ativar"}
+            color={isAtivo ? "warning" : "success"}
+            onClick={onDeactivate}
             >
-                {isAtivo ? <BlockIcon /> : <CheckCircleIcon />}
-            </IconButton>
-            </Tooltip>
+            {isAtivo ? <BlockOutlined /> : <CheckCircleOutlined />}
+            </ActionButton>
         )}
 
-        <Tooltip title="Editar">
-            <IconButton
-            color="primary"
-            onClick={onEdit}
-            >
-            <EditIcon />
-            </IconButton>
-        </Tooltip>
+        <ActionButton title="Editar" color="primary" onClick={onEdit}>
+            <EditOutlined />
+        </ActionButton>
 
-        <Tooltip title="Excluir">
-            <IconButton
-            color="error"
-            onClick={onDelete}
-            >
-            <DeleteIcon />
-            </IconButton>
-        </Tooltip>
+        {onDelete && (
+            <ActionButton title="Excluir" color="error" onClick={onDelete}>
+            <DeleteOutlined />
+            </ActionButton>
+        )}
         </Stack>
     );
 }
